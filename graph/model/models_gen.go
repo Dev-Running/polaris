@@ -3,50 +3,66 @@
 package model
 
 type Course struct {
+	ID          string        `json:"id"`
+	Title       string        `json:"title"`
+	Slug        string        `json:"slug"`
+	Description *string       `json:"description"`
+	CreatedAt   string        `json:"created_at"`
+	UpdatedAt   string        `json:"updated_at"`
+	Lessons     []*Lesson     `json:"Lessons"`
+	Module      []*Module     `json:"Module"`
+	Enrollment  []*Enrollment `json:"Enrollment"`
+}
+
+type Enrollment struct {
+	ID        string  `json:"id"`
+	CreatedAt string  `json:"created_at"`
+	UpdatedAt string  `json:"updated_at"`
+	DeletedAt string  `json:"deleted_at"`
+	User      *User   `json:"user"`
+	Course    *Course `json:"course"`
+	UserID    *string `json:"userId"`
+	CourseID  *string `json:"courseId"`
+}
+
+type Lesson struct {
+	ID        string    `json:"id"`
+	Title     string    `json:"title"`
+	Slug      string    `json:"slug"`
+	Link      *string   `json:"link"`
+	CreatedAt string    `json:"created_at"`
+	UpdatedAt string    `json:"updated_at"`
+	Modules   []*Module `json:"Modules"`
+	Course    []*Course `json:"Course"`
+}
+
+type Module struct {
+	ID          string    `json:"id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	Slug        string    `json:"slug"`
+	CreatedAt   string    `json:"created_at"`
+	UpdatedAt   string    `json:"updated_at"`
+	Lessons     []*Lesson `json:"Lessons"`
+	Course      *Course   `json:"Course"`
+}
+
+type NewCourse struct {
 	ID          string  `json:"id"`
 	Title       string  `json:"title"`
 	Slug        string  `json:"slug"`
 	Description *string `json:"description"`
 	CreatedAt   string  `json:"created_at"`
-	UpdatedAt   *string `json:"updated_at"`
-}
-
-type Enrollment struct {
-	ID       string `json:"id"`
-	UserID   string `json:"user_id"`
-	CourseID string `json:"course_id"`
-}
-
-type Lesson struct {
-	ID    string  `json:"id"`
-	Title string  `json:"title"`
-	Slug  string  `json:"slug"`
-	Link  *string `json:"link"`
-}
-
-type Module struct {
-	ID          string `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Slug        string `json:"slug"`
-}
-
-type NewCourse struct {
-	ID            string    `json:"id"`
-	Title         string    `json:"title"`
-	Slug          string    `json:"slug"`
-	Description   *string   `json:"description"`
-	CreatedAt     string    `json:"created_at"`
-	UpdatedAt     *string   `json:"updated_at"`
-	AuthorID      []*string `json:"author_id"`
-	EnrollmentsID []*string `json:"enrollments_id"`
-	ModulesID     []*string `json:"modules_id"`
+	UpdatedAt   string  `json:"updated_at"`
 }
 
 type NewEnrollment struct {
-	ID       string    `json:"id"`
-	UserID   []*string `json:"user_id"`
-	CourseID []*string `json:"course_id"`
+	ID        string `json:"id"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+	DeletedAt string `json:"deleted_at"`
+	UserID    string `json:"userId"`
+	CourseID  string `json:"courseId"`
 }
 
 type NewLesson struct {
@@ -54,8 +70,8 @@ type NewLesson struct {
 	Title    string    `json:"title"`
 	Slug     string    `json:"slug"`
 	Link     string    `json:"link"`
-	ModuleID []*string `json:"module_id"`
-	CourseID []*string `json:"course_id"`
+	ModuleID []*string `json:"moduleId"`
+	CourseID []*string `json:"courseId"`
 }
 
 type NewModule struct {
@@ -63,6 +79,9 @@ type NewModule struct {
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Slug        string `json:"slug"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
+	CourseID    string `json:"courseId"`
 }
 
 type NewUser struct {
@@ -72,17 +91,16 @@ type NewUser struct {
 	Email     string  `json:"email"`
 	Password  string  `json:"password"`
 	Cellphone string  `json:"cellphone"`
-	BirthDate *string `json:"birth_date"`
 	TokenUser *string `json:"token_user"`
 }
 
 type User struct {
-	ID        string  `json:"id"`
-	Firstname string  `json:"firstname"`
-	Lastname  string  `json:"lastname"`
-	Email     string  `json:"email"`
-	Password  string  `json:"password"`
-	Cellphone string  `json:"cellphone"`
-	BirthDate *string `json:"birth_date"`
-	TokenUser *string `json:"token_user"`
+	ID         string        `json:"id"`
+	Firstname  string        `json:"firstname"`
+	Lastname   string        `json:"lastname"`
+	Email      string        `json:"email"`
+	Password   string        `json:"password"`
+	Cellphone  string        `json:"cellphone"`
+	TokenUser  *string       `json:"token_user"`
+	Enrollment []*Enrollment `json:"Enrollment"`
 }

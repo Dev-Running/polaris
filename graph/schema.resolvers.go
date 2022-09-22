@@ -6,45 +6,17 @@ package graph
 import (
 	"context"
 	"fmt"
-	jose "github.com/dvsekhvalnov/jose2go"
-	"github.com/laurentino14/user/database"
+	"github.com/laurentino14/user/useCases/user"
+
 	"github.com/laurentino14/user/graph/generated"
 	"github.com/laurentino14/user/graph/model"
-	"gorm.io/gorm"
 )
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
-	id, err1 := jose.Sign("123", jose.HS256, []byte{131})
-	if err1 != nil {
-		panic("error id")
-	}
-
-	token, err2 := jose.Sign("123", jose.HS256, []byte{131})
-	if err2 != nil {
-		panic("error id")
-	}
-
-	database.DB().Session(&gorm.Session{CreateBatchSize: 1000}).Table("users").Create(model.User{
-		ID:        id,
-		Firstname: input.Firstname,
-		Lastname:  input.Lastname,
-		Email:     input.Email,
-		Password:  input.Password,
-		Cellphone: input.Cellphone,
-		BirthDate: input.BirthDate,
-		TokenUser: &token,
-	})
-
-	userData := &model.User{
-		ID:        id,
-		Firstname: input.Firstname,
-		Lastname:  input.Lastname,
-		Email:     input.Email,
-		Password:  input.Password,
-		Cellphone: input.Cellphone,
-		BirthDate: input.BirthDate,
-		TokenUser: &token,
+	userData := user.CreateUser(input, ctx)
+	if userData == nil {
+		return nil, fmt.Errorf("Erro de conexão com o banco de dados")
 	}
 
 	return userData, nil
@@ -52,7 +24,12 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 
 // Users is the resolver for the users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
-	panic(fmt.Errorf("not implemented: Users - users"))
+	userData := user.GetAllUsers(ctx)
+	if userData == nil {
+		return nil, fmt.Errorf("Erro de conexão com o banco de dados")
+	}
+
+	return userData, nil
 }
 
 // Courses is the resolver for the courses field.

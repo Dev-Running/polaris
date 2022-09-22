@@ -2,6 +2,8 @@
 #
 # https://gqlgen.com/getting-started/
 
+scalar Date
+
 type User {
   id: String!
   firstname: String!
@@ -9,9 +11,8 @@ type User {
   email: String!
   password: String!
   cellphone: String!
-  birth_date: String
   token_user: String
-
+  Enrollment: [Enrollment]
 }
 
 input NewUser{
@@ -21,7 +22,6 @@ input NewUser{
   email: String!
   password: String!
   cellphone: String!
-  birth_date: String
   token_user: String
 }
 
@@ -30,8 +30,11 @@ type Course {
   title: String!
   slug: String!
   description: String
-  created_at: String!
-  updated_at: String
+  created_at: Date!
+  updated_at: Date!
+  Lessons:     [Lesson]
+  Module:      [Module]
+  Enrollment:  [Enrollment]
 
 }
 
@@ -40,26 +43,29 @@ input NewCourse {
   title: String!
   slug: String!
   description: String
-  created_at: String!
-  updated_at: String
-  author_id: [String]
-  enrollments_id: [String]
-  modules_id: [String]
+  created_at: Date!
+  updated_at: Date!
 }
 
 type Enrollment {
   id: String!
-  user_id: String!
-  course_id: String!
-
+  created_at: Date!
+  updated_at: Date!
+  deleted_at: Date!
+  user: User!
+  course: Course!
+  userId:String
+  courseId:String
 
 }
 
 input NewEnrollment {
   id: String!
-
-  user_id: [String]
-  course_id: [String]
+  created_at: Date!
+  updated_at: Date!
+  deleted_at: Date!
+  userId: String!
+  courseId: String!
 }
 
 
@@ -68,7 +74,10 @@ type Module {
   title: String!
   description: String!
   slug: String!
-
+  created_at: Date!
+  updated_at: Date!
+  Lessons: [Lesson]
+  Course: Course
 }
 
 input NewModule {
@@ -76,6 +85,9 @@ input NewModule {
   title: String!
   description: String!
   slug: String!
+  created_at: Date!
+  updated_at: Date!
+  courseId: String!
 
 }
 
@@ -84,6 +96,10 @@ type Lesson {
   title: String!
   slug: String!
   link: String
+  created_at: Date!
+  updated_at: Date!
+  Modules: [Module!]!
+  Course: [Course!]!
 
 }
 
@@ -92,8 +108,8 @@ input NewLesson {
   title: String!
   slug: String!
   link: String!
-  module_id: [String]
-  course_id: [String]
+  moduleId: [String]
+  courseId: [String]
 }
 
 type Query {

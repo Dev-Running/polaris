@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "go run github.com/prisma/prisma-client-go"
+  output   = "./"
+  package  = "prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = "postgresql://postgres:dev@localhost:5432/devrunning?schema=public"
+}
+
+model User {
+  id         String       @id @default(uuid())
+  firstname  String
+  lastname   String
+  email      String       @unique
+  password   String
+  cellphone  String       @unique
+  token_user String
+  created_at DateTime     @default(now()) @db.Date()
+  updated_at DateTime     @updatedAt @db.Date()
+  Enrollment Enrollment[]
+
+  @@map("users")
+}
+
+model Course {
+  id          String       @id @default(cuid())
+  title       String       @unique
+  slug        String       @unique
+  description String
+  created_at  DateTime     @default(now()) @db.Date()
+  updated_at  DateTime     @updatedAt @db.Date()
+  Lessons     Lesson[]
+  Module      Module[]
+  Enrollment  Enrollment[]
+
+  @@map("courses")
+}
+
+model Enrollment {
+  id         String    @id @default(cuid())
+  created_at DateTime? @db.Date()
+  updated_at DateTime  @updatedAt @db.Date()
+  deleted_at DateTime? @db.Date()
+  User       User      @relation(fields: [userId], references: [id])
+  Course     Course    @relation(fields: [courseId], references: [id])
+  userId     String
+  courseId   String
+
+  @@map("enrollments")
+}
+
+model Module {
+  id          String   @id
+  title       String   @unique
+  description String
+  slug        String   @unique
+  created_at  DateTime @default(now()) @db.Date()
+  updated_at  DateTime @updatedAt @db.Date()
+  Lessons     Lesson[]
+  Course      Course   @relation(fields: [courseId], references: [id])
+  courseId    String
+
+  @@map("modules")
+}
+
+model Lesson {
+  id         String   @id
+  title      String   @unique
+  slug       String   @unique
+  link       String   @unique
+  created_at DateTime @default(now()) @db.Date()
+  updated_at DateTime @updatedAt @db.Date()
+  Module     Module   @relation(fields: [moduleId], references: [id])
+  Course     Course   @relation(fields: [courseId], references: [id])
+  courseId   String
+  moduleId   String
+
+  @@map("lessons")
+}
