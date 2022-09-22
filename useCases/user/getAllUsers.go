@@ -12,13 +12,14 @@ func GetAllUsers(ctx context.Context) []*model.User {
 	if err := client.Prisma.Connect(); err != nil {
 		return nil
 	}
+
 	defer func() {
 		if err := client.Prisma.Disconnect(); err != nil {
 			panic(err)
 		}
 	}()
 
-	exec, err := client.User.FindMany().Exec(ctx)
+	exec, err := client.User.FindMany().Take(10).Exec(ctx)
 
 	if err != nil {
 		return nil
