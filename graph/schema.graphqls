@@ -1,0 +1,112 @@
+# GraphQL schema example
+#
+# https://gqlgen.com/getting-started/
+
+type User {
+  id: String!
+  firstname: String!
+  lastname: String!
+  email: String!
+  password: String!
+  cellphone: String!
+  birth_date: String
+  token_user: String
+
+}
+
+input NewUser{
+  id: String
+  firstname: String!
+  lastname: String!
+  email: String!
+  password: String!
+  cellphone: String!
+  birth_date: String
+  token_user: String
+}
+
+type Course {
+  id: String!
+  title: String!
+  slug: String!
+  description: String
+  created_at: String!
+  updated_at: String
+
+}
+
+input NewCourse {
+  id: String!
+  title: String!
+  slug: String!
+  description: String
+  created_at: String!
+  updated_at: String
+  author_id: [String]
+  enrollments_id: [String]
+  modules_id: [String]
+}
+
+type Enrollment {
+  id: String!
+  user_id: String!
+  course_id: String!
+
+
+}
+
+input NewEnrollment {
+  id: String!
+
+  user_id: [String]
+  course_id: [String]
+}
+
+
+type Module {
+  id: String!
+  title: String!
+  description: String!
+  slug: String!
+
+}
+
+input NewModule {
+  id: String!
+  title: String!
+  description: String!
+  slug: String!
+
+}
+
+type Lesson {
+  id: String!
+  title: String!
+  slug: String!
+  link: String
+
+}
+
+input NewLesson {
+  id: String!
+  title: String!
+  slug: String!
+  link: String!
+  module_id: [String]
+  course_id: [String]
+}
+
+type Query {
+  users: [User]
+  courses: [Course]
+  modules: [Module]
+  lessons: [Lesson]
+  enrollments: [Enrollment]
+
+
+}
+
+
+type Mutation {
+  createUser(input: NewUser!): User!
+}
