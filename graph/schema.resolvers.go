@@ -6,20 +6,47 @@ package graph
 import (
 	"context"
 	"fmt"
-	"github.com/laurentino14/user/useCases/user"
+	"github.com/laurentino14/user/useCases/course"
+	"github.com/laurentino14/user/useCases/module"
 
 	"github.com/laurentino14/user/graph/generated"
 	"github.com/laurentino14/user/graph/model"
+	"github.com/laurentino14/user/useCases/user"
 )
 
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
-	userData := user.CreateUser(input, ctx)
-	if userData == nil {
-		return nil, fmt.Errorf("Erro de conexão com o banco de dados")
+	userData, err := user.CreateUser(input, ctx)
+	if err != nil {
+		return nil, fmt.Errorf("Já existe um usuário utilizando esse e-mail ou telefone")
 	}
 
 	return userData, nil
+}
+
+// CreateCourse is the resolver for the createCourse field.
+func (r *mutationResolver) CreateCourse(ctx context.Context, input model.NewCourse) (*model.Course, error) {
+	courseData, err := course.CreateCourse(input, ctx)
+	if courseData == nil {
+		return nil, fmt.Errorf("Este curso já existe!")
+	}
+
+	return courseData, err
+}
+
+// CreateModule is the resolver for the createModule field.
+func (r *mutationResolver) CreateModule(ctx context.Context, input model.NewModule) (*model.Module, error) {
+	panic(fmt.Errorf("not implemented: CreateModule - createModule"))
+}
+
+// CreateLesson is the resolver for the createLesson field.
+func (r *mutationResolver) CreateLesson(ctx context.Context, input model.NewLesson) (*model.Lesson, error) {
+	panic(fmt.Errorf("not implemented: CreateLesson - createLesson"))
+}
+
+// CreateEnrollment is the resolver for the createEnrollment field.
+func (r *mutationResolver) CreateEnrollment(ctx context.Context, input model.NewEnrollment) (*model.Enrollment, error) {
+	panic(fmt.Errorf("not implemented: CreateEnrollment - createEnrollment"))
 }
 
 // Users is the resolver for the users field.
@@ -34,12 +61,22 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 
 // Courses is the resolver for the courses field.
 func (r *queryResolver) Courses(ctx context.Context) ([]*model.Course, error) {
-	panic(fmt.Errorf("not implemented: Courses - courses"))
+	coursesData := course.GetAllCourses(ctx)
+	if coursesData == nil {
+		return nil, fmt.Errorf("Erro de conexão com o banco de dados")
+	}
+
+	return coursesData, nil
 }
 
 // Modules is the resolver for the modules field.
 func (r *queryResolver) Modules(ctx context.Context) ([]*model.Module, error) {
-	panic(fmt.Errorf("not implemented: Modules - modules"))
+	coursesData := module.GetAllModules(ctx)
+	if coursesData == nil {
+		return nil, fmt.Errorf("Erro de conexão com o banco de dados")
+	}
+
+	return coursesData, nil
 }
 
 // Lessons is the resolver for the lessons field.

@@ -6,11 +6,11 @@ import (
 	"github.com/laurentino14/user/prisma"
 )
 
-func CreateUser(input model.NewUser, ctx context.Context) *model.User {
+func CreateUser(input model.NewUser, ctx context.Context) (*model.User, error) {
 	client := prisma.NewClient()
 
 	if err := client.Prisma.Connect(); err != nil {
-		return nil
+		return nil, err
 	}
 	defer func() {
 		if err := client.Prisma.Disconnect(); err != nil {
@@ -26,7 +26,7 @@ func CreateUser(input model.NewUser, ctx context.Context) *model.User {
 		prisma.User.TokenUser.Set(*input.TokenUser),
 	).Exec(ctx)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	userData := &model.User{
@@ -38,5 +38,5 @@ func CreateUser(input model.NewUser, ctx context.Context) *model.User {
 		Cellphone: input.Cellphone,
 		TokenUser: input.TokenUser,
 	}
-	return userData
+	return userData, nil
 }
