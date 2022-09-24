@@ -2,6 +2,8 @@ module github.com/laurentino14/user
 
 go 1.19
 
+replace github.com/laurentino14/user/prisma => ./prisma
+
 require (
 	github.com/99designs/gqlgen v0.17.20
 	github.com/iancoleman/strcase v0.0.0-20190422225806-e506e3ef7365

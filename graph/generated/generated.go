@@ -46,53 +46,39 @@ type ComplexityRoot struct {
 	Course struct {
 		CreatedAt   func(childComplexity int) int
 		Description func(childComplexity int) int
-		Enrollment  func(childComplexity int) int
+		Enrollments func(childComplexity int) int
 		ID          func(childComplexity int) int
 		Lessons     func(childComplexity int) int
-		Module      func(childComplexity int) int
 		Slug        func(childComplexity int) int
+		Steps       func(childComplexity int) int
 		Title       func(childComplexity int) int
 		UpdatedAt   func(childComplexity int) int
 	}
 
 	Enrollment struct {
-		Course    func(childComplexity int) int
 		CourseID  func(childComplexity int) int
 		CreatedAt func(childComplexity int) int
 		DeletedAt func(childComplexity int) int
 		ID        func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
-		User      func(childComplexity int) int
 		UserID    func(childComplexity int) int
 	}
 
 	Lesson struct {
-		Course    func(childComplexity int) int
 		CreatedAt func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Link      func(childComplexity int) int
-		Modules   func(childComplexity int) int
 		Slug      func(childComplexity int) int
+		StepID    func(childComplexity int) int
 		Title     func(childComplexity int) int
 		UpdatedAt func(childComplexity int) int
-	}
-
-	Module struct {
-		Course      func(childComplexity int) int
-		CreatedAt   func(childComplexity int) int
-		Description func(childComplexity int) int
-		ID          func(childComplexity int) int
-		Lessons     func(childComplexity int) int
-		Slug        func(childComplexity int) int
-		Title       func(childComplexity int) int
-		UpdatedAt   func(childComplexity int) int
 	}
 
 	Mutation struct {
 		CreateCourse     func(childComplexity int, input model.NewCourse) int
 		CreateEnrollment func(childComplexity int, input model.NewEnrollment) int
 		CreateLesson     func(childComplexity int, input model.NewLesson) int
-		CreateModule     func(childComplexity int, input model.NewModule) int
+		CreateStep       func(childComplexity int, input model.NewStep) int
 		CreateUser       func(childComplexity int, input model.NewUser) int
 	}
 
@@ -100,8 +86,20 @@ type ComplexityRoot struct {
 		Courses     func(childComplexity int) int
 		Enrollments func(childComplexity int) int
 		Lessons     func(childComplexity int) int
-		Modules     func(childComplexity int) int
+		Steps       func(childComplexity int) int
 		Users       func(childComplexity int) int
+	}
+
+	Step struct {
+		Course      func(childComplexity int) int
+		CourseID    func(childComplexity int) int
+		CreatedAt   func(childComplexity int) int
+		Description func(childComplexity int) int
+		ID          func(childComplexity int) int
+		Lessons     func(childComplexity int) int
+		Slug        func(childComplexity int) int
+		Title       func(childComplexity int) int
+		UpdatedAt   func(childComplexity int) int
 	}
 
 	User struct {
@@ -119,14 +117,14 @@ type ComplexityRoot struct {
 type MutationResolver interface {
 	CreateUser(ctx context.Context, input model.NewUser) (*model.User, error)
 	CreateCourse(ctx context.Context, input model.NewCourse) (*model.Course, error)
-	CreateModule(ctx context.Context, input model.NewModule) (*model.Module, error)
+	CreateStep(ctx context.Context, input model.NewStep) (*model.Step, error)
 	CreateLesson(ctx context.Context, input model.NewLesson) (*model.Lesson, error)
 	CreateEnrollment(ctx context.Context, input model.NewEnrollment) (*model.Enrollment, error)
 }
 type QueryResolver interface {
 	Users(ctx context.Context) ([]*model.User, error)
 	Courses(ctx context.Context) ([]*model.Course, error)
-	Modules(ctx context.Context) ([]*model.Module, error)
+	Steps(ctx context.Context) ([]*model.Step, error)
 	Lessons(ctx context.Context) ([]*model.Lesson, error)
 	Enrollments(ctx context.Context) ([]*model.Enrollment, error)
 }
@@ -160,12 +158,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Course.Description(childComplexity), true
 
-	case "Course.Enrollment":
-		if e.complexity.Course.Enrollment == nil {
+	case "Course.Enrollments":
+		if e.complexity.Course.Enrollments == nil {
 			break
 		}
 
-		return e.complexity.Course.Enrollment(childComplexity), true
+		return e.complexity.Course.Enrollments(childComplexity), true
 
 	case "Course.id":
 		if e.complexity.Course.ID == nil {
@@ -181,19 +179,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Course.Lessons(childComplexity), true
 
-	case "Course.Module":
-		if e.complexity.Course.Module == nil {
-			break
-		}
-
-		return e.complexity.Course.Module(childComplexity), true
-
 	case "Course.slug":
 		if e.complexity.Course.Slug == nil {
 			break
 		}
 
 		return e.complexity.Course.Slug(childComplexity), true
+
+	case "Course.Steps":
+		if e.complexity.Course.Steps == nil {
+			break
+		}
+
+		return e.complexity.Course.Steps(childComplexity), true
 
 	case "Course.title":
 		if e.complexity.Course.Title == nil {
@@ -208,13 +206,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Course.UpdatedAt(childComplexity), true
-
-	case "Enrollment.course":
-		if e.complexity.Enrollment.Course == nil {
-			break
-		}
-
-		return e.complexity.Enrollment.Course(childComplexity), true
 
 	case "Enrollment.courseId":
 		if e.complexity.Enrollment.CourseID == nil {
@@ -251,26 +242,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Enrollment.UpdatedAt(childComplexity), true
 
-	case "Enrollment.user":
-		if e.complexity.Enrollment.User == nil {
-			break
-		}
-
-		return e.complexity.Enrollment.User(childComplexity), true
-
 	case "Enrollment.userId":
 		if e.complexity.Enrollment.UserID == nil {
 			break
 		}
 
 		return e.complexity.Enrollment.UserID(childComplexity), true
-
-	case "Lesson.Course":
-		if e.complexity.Lesson.Course == nil {
-			break
-		}
-
-		return e.complexity.Lesson.Course(childComplexity), true
 
 	case "Lesson.created_at":
 		if e.complexity.Lesson.CreatedAt == nil {
@@ -293,19 +270,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Lesson.Link(childComplexity), true
 
-	case "Lesson.Modules":
-		if e.complexity.Lesson.Modules == nil {
-			break
-		}
-
-		return e.complexity.Lesson.Modules(childComplexity), true
-
 	case "Lesson.slug":
 		if e.complexity.Lesson.Slug == nil {
 			break
 		}
 
 		return e.complexity.Lesson.Slug(childComplexity), true
+
+	case "Lesson.stepId":
+		if e.complexity.Lesson.StepID == nil {
+			break
+		}
+
+		return e.complexity.Lesson.StepID(childComplexity), true
 
 	case "Lesson.title":
 		if e.complexity.Lesson.Title == nil {
@@ -320,62 +297,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Lesson.UpdatedAt(childComplexity), true
-
-	case "Module.Course":
-		if e.complexity.Module.Course == nil {
-			break
-		}
-
-		return e.complexity.Module.Course(childComplexity), true
-
-	case "Module.created_at":
-		if e.complexity.Module.CreatedAt == nil {
-			break
-		}
-
-		return e.complexity.Module.CreatedAt(childComplexity), true
-
-	case "Module.description":
-		if e.complexity.Module.Description == nil {
-			break
-		}
-
-		return e.complexity.Module.Description(childComplexity), true
-
-	case "Module.id":
-		if e.complexity.Module.ID == nil {
-			break
-		}
-
-		return e.complexity.Module.ID(childComplexity), true
-
-	case "Module.Lessons":
-		if e.complexity.Module.Lessons == nil {
-			break
-		}
-
-		return e.complexity.Module.Lessons(childComplexity), true
-
-	case "Module.slug":
-		if e.complexity.Module.Slug == nil {
-			break
-		}
-
-		return e.complexity.Module.Slug(childComplexity), true
-
-	case "Module.title":
-		if e.complexity.Module.Title == nil {
-			break
-		}
-
-		return e.complexity.Module.Title(childComplexity), true
-
-	case "Module.updated_at":
-		if e.complexity.Module.UpdatedAt == nil {
-			break
-		}
-
-		return e.complexity.Module.UpdatedAt(childComplexity), true
 
 	case "Mutation.createCourse":
 		if e.complexity.Mutation.CreateCourse == nil {
@@ -413,17 +334,17 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateLesson(childComplexity, args["input"].(model.NewLesson)), true
 
-	case "Mutation.createModule":
-		if e.complexity.Mutation.CreateModule == nil {
+	case "Mutation.createStep":
+		if e.complexity.Mutation.CreateStep == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_createModule_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_createStep_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateModule(childComplexity, args["input"].(model.NewModule)), true
+		return e.complexity.Mutation.CreateStep(childComplexity, args["input"].(model.NewStep)), true
 
 	case "Mutation.createUser":
 		if e.complexity.Mutation.CreateUser == nil {
@@ -458,12 +379,12 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Query.Lessons(childComplexity), true
 
-	case "Query.modules":
-		if e.complexity.Query.Modules == nil {
+	case "Query.steps":
+		if e.complexity.Query.Steps == nil {
 			break
 		}
 
-		return e.complexity.Query.Modules(childComplexity), true
+		return e.complexity.Query.Steps(childComplexity), true
 
 	case "Query.users":
 		if e.complexity.Query.Users == nil {
@@ -471,6 +392,69 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Users(childComplexity), true
+
+	case "Step.Course":
+		if e.complexity.Step.Course == nil {
+			break
+		}
+
+		return e.complexity.Step.Course(childComplexity), true
+
+	case "Step.courseId":
+		if e.complexity.Step.CourseID == nil {
+			break
+		}
+
+		return e.complexity.Step.CourseID(childComplexity), true
+
+	case "Step.created_at":
+		if e.complexity.Step.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Step.CreatedAt(childComplexity), true
+
+	case "Step.description":
+		if e.complexity.Step.Description == nil {
+			break
+		}
+
+		return e.complexity.Step.Description(childComplexity), true
+
+	case "Step.id":
+		if e.complexity.Step.ID == nil {
+			break
+		}
+
+		return e.complexity.Step.ID(childComplexity), true
+
+	case "Step.lessons":
+		if e.complexity.Step.Lessons == nil {
+			break
+		}
+
+		return e.complexity.Step.Lessons(childComplexity), true
+
+	case "Step.slug":
+		if e.complexity.Step.Slug == nil {
+			break
+		}
+
+		return e.complexity.Step.Slug(childComplexity), true
+
+	case "Step.title":
+		if e.complexity.Step.Title == nil {
+			break
+		}
+
+		return e.complexity.Step.Title(childComplexity), true
+
+	case "Step.updated_at":
+		if e.complexity.Step.UpdatedAt == nil {
+			break
+		}
+
+		return e.complexity.Step.UpdatedAt(childComplexity), true
 
 	case "User.cellphone":
 		if e.complexity.User.Cellphone == nil {
@@ -539,7 +523,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputNewCourse,
 		ec.unmarshalInputNewEnrollment,
 		ec.unmarshalInputNewLesson,
-		ec.unmarshalInputNewModule,
+		ec.unmarshalInputNewStep,
 		ec.unmarshalInputNewUser,
 	)
 	first := true
@@ -636,8 +620,8 @@ type Course {
   created_at: Date!
   updated_at: Date!
   Lessons:     [Lesson]
-  Module:      [Module]
-  Enrollment:  [Enrollment]
+  Steps:      [Step]
+  Enrollments:  [Enrollment]
 
 }
 
@@ -653,72 +637,66 @@ input NewCourse {
 type Enrollment {
   id: String!
   created_at: Date!
-  updated_at: Date!
-  deleted_at: Date!
-  user: User!
-  course: Course!
-  userId:String
-  courseId:String
+  updated_at: Date
+  deleted_at: Date
+  userId:String!
+  courseId:String!
 
 }
 
 input NewEnrollment {
   id: String!
-  created_at: Date!
-  updated_at: Date!
-  deleted_at: Date!
+  created_at: Date
+  updated_at: Date
+  deleted_at: Date
   userId: String!
   courseId: String!
 }
 
 
-type Module {
+type Step {
   id: String!
   title: String!
   description: String!
   slug: String!
   created_at: Date!
   updated_at: Date!
-  Lessons: [Lesson]
-  Course: Course
+  lessons: [Lesson]
+  Course: Course!
+  courseId: String!
 }
 
-input NewModule {
-  id: String!
+input NewStep {
   title: String!
   description: String!
   slug: String!
-  created_at: Date!
-  updated_at: Date!
+  created_at: Date
+  updated_at: Date
   courseId: String!
 
 }
 
 type Lesson {
-  id: String!
-  title: String!
-  slug: String!
-  link: String
-  created_at: Date!
-  updated_at: Date!
-  Modules: [Module!]!
-  Course: [Course!]!
-
-}
-
-input NewLesson {
-  id: String!
+  id: String
   title: String!
   slug: String!
   link: String!
-  moduleId: [String]
-  courseId: [String]
+  created_at: Date
+  updated_at: Date
+  stepId: String!
+}
+
+input NewLesson {
+  title: String!
+  slug: String!
+  link: String!
+  stepId: String!
 }
 
 type Query {
   users: [User]
   courses: [Course]
-  modules: [Module]
+  steps: [Step]
   lessons: [Lesson]
   enrollments: [Enrollment]
 
@@ -729,7 +707,7 @@ type Query {
 type Mutation {
   createUser(input: NewUser!): User!
   createCourse(input: NewCourse!): Course!
-  createModule(input: NewModule!): Module!
+  createStep(input: NewStep!): Step!
   createLesson(input: NewLesson!): Lesson!
   createEnrollment(input: NewEnrollment!): Enrollment!
 }
@@ -786,13 +764,13 @@ func (ec *executionContext) field_Mutation_createLesson_args(ctx context.Context
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_createModule_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_createStep_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
-	var arg0 model.NewModule
+	var arg0 model.NewStep
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewModule2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewModule(ctx, tmp)
+		arg0, err = ec.unmarshalNNewStep2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewStep(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1178,10 +1156,8 @@ func (ec *executionContext) fieldContext_Course_Lessons(ctx context.Context, fie
 				return ec.fieldContext_Lesson_created_at(ctx, field)
 			case "updated_at":
 				return ec.fieldContext_Lesson_updated_at(ctx, field)
-			case "Modules":
-				return ec.fieldContext_Lesson_Modules(ctx, field)
-			case "Course":
-				return ec.fieldContext_Lesson_Course(ctx, field)
+			case "stepId":
+				return ec.fieldContext_Lesson_stepId(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Lesson", field.Name)
 		},
@@ -1189,8 +1165,8 @@ func (ec *executionContext) fieldContext_Course_Lessons(ctx context.Context, fie
 	return fc, nil
 }
 
-func (ec *executionContext) _Course_Module(ctx context.Context, field graphql.CollectedField, obj *model.Course) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Course_Module(ctx, field)
+func (ec *executionContext) _Course_Steps(ctx context.Context, field graphql.CollectedField, obj *model.Course) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Course_Steps(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1203,7 +1179,7 @@ func (ec *executionContext) _Course_Module(ctx context.Context, field graphql.Co
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Module, nil
+		return obj.Steps, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1212,12 +1188,12 @@ func (ec *executionContext) _Course_Module(ctx context.Context, field graphql.Co
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Module)
+	res := resTmp.([]*model.Step)
 	fc.Result = res
-	return ec.marshalOModule2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐModule(ctx, field.Selections, res)
+	return ec.marshalOStep2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐStep(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Course_Module(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Course_Steps(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Course",
 		Field:      field,
@@ -1226,30 +1202,32 @@ func (ec *executionContext) fieldContext_Course_Module(ctx context.Context, fiel
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_Module_id(ctx, field)
+				return ec.fieldContext_Step_id(ctx, field)
 			case "title":
-				return ec.fieldContext_Module_title(ctx, field)
+				return ec.fieldContext_Step_title(ctx, field)
 			case "description":
-				return ec.fieldContext_Module_description(ctx, field)
+				return ec.fieldContext_Step_description(ctx, field)
 			case "slug":
-				return ec.fieldContext_Module_slug(ctx, field)
+				return ec.fieldContext_Step_slug(ctx, field)
 			case "created_at":
-				return ec.fieldContext_Module_created_at(ctx, field)
+				return ec.fieldContext_Step_created_at(ctx, field)
 			case "updated_at":
-				return ec.fieldContext_Module_updated_at(ctx, field)
-			case "Lessons":
-				return ec.fieldContext_Module_Lessons(ctx, field)
+				return ec.fieldContext_Step_updated_at(ctx, field)
+			case "lessons":
+				return ec.fieldContext_Step_lessons(ctx, field)
 			case "Course":
-				return ec.fieldContext_Module_Course(ctx, field)
+				return ec.fieldContext_Step_Course(ctx, field)
+			case "courseId":
+				return ec.fieldContext_Step_courseId(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Module", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Step", field.Name)
 		},
 	}
 	return fc, nil
 }
 
-func (ec *executionContext) _Course_Enrollment(ctx context.Context, field graphql.CollectedField, obj *model.Course) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Course_Enrollment(ctx, field)
+func (ec *executionContext) _Course_Enrollments(ctx context.Context, field graphql.CollectedField, obj *model.Course) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Course_Enrollments(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1262,7 +1240,7 @@ func (ec *executionContext) _Course_Enrollment(ctx context.Context, field graphq
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Enrollment, nil
+		return obj.Enrollments, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1276,7 +1254,7 @@ func (ec *executionContext) _Course_Enrollment(ctx context.Context, field graphq
 	return ec.marshalOEnrollment2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐEnrollment(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Course_Enrollment(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Course_Enrollments(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Course",
 		Field:      field,
@@ -1292,10 +1270,6 @@ func (ec *executionContext) fieldContext_Course_Enrollment(ctx context.Context, 
 				return ec.fieldContext_Enrollment_updated_at(ctx, field)
 			case "deleted_at":
 				return ec.fieldContext_Enrollment_deleted_at(ctx, field)
-			case "user":
-				return ec.fieldContext_Enrollment_user(ctx, field)
-			case "course":
-				return ec.fieldContext_Enrollment_course(ctx, field)
 			case "userId":
 				return ec.fieldContext_Enrollment_userId(ctx, field)
 			case "courseId":
@@ -1416,14 +1390,11 @@ func (ec *executionContext) _Enrollment_updated_at(ctx context.Context, field gr
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNDate2string(ctx, field.Selections, res)
+	return ec.marshalODate2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Enrollment_updated_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1460,14 +1431,11 @@ func (ec *executionContext) _Enrollment_deleted_at(ctx context.Context, field gr
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNDate2string(ctx, field.Selections, res)
+	return ec.marshalODate2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Enrollment_deleted_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1478,132 +1446,6 @@ func (ec *executionContext) fieldContext_Enrollment_deleted_at(ctx context.Conte
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type Date does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Enrollment_user(ctx context.Context, field graphql.CollectedField, obj *model.Enrollment) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Enrollment_user(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.User, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.User)
-	fc.Result = res
-	return ec.marshalNUser2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Enrollment_user(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Enrollment",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_User_id(ctx, field)
-			case "firstname":
-				return ec.fieldContext_User_firstname(ctx, field)
-			case "lastname":
-				return ec.fieldContext_User_lastname(ctx, field)
-			case "email":
-				return ec.fieldContext_User_email(ctx, field)
-			case "password":
-				return ec.fieldContext_User_password(ctx, field)
-			case "cellphone":
-				return ec.fieldContext_User_cellphone(ctx, field)
-			case "token_user":
-				return ec.fieldContext_User_token_user(ctx, field)
-			case "Enrollment":
-				return ec.fieldContext_User_Enrollment(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Enrollment_course(ctx context.Context, field graphql.CollectedField, obj *model.Enrollment) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Enrollment_course(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Course, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.Course)
-	fc.Result = res
-	return ec.marshalNCourse2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐCourse(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Enrollment_course(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Enrollment",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Course_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Course_title(ctx, field)
-			case "slug":
-				return ec.fieldContext_Course_slug(ctx, field)
-			case "description":
-				return ec.fieldContext_Course_description(ctx, field)
-			case "created_at":
-				return ec.fieldContext_Course_created_at(ctx, field)
-			case "updated_at":
-				return ec.fieldContext_Course_updated_at(ctx, field)
-			case "Lessons":
-				return ec.fieldContext_Course_Lessons(ctx, field)
-			case "Module":
-				return ec.fieldContext_Course_Module(ctx, field)
-			case "Enrollment":
-				return ec.fieldContext_Course_Enrollment(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Course", field.Name)
 		},
 	}
 	return fc, nil
@@ -1630,11 +1472,14 @@ func (ec *executionContext) _Enrollment_userId(ctx context.Context, field graphq
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Enrollment_userId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1671,11 +1516,14 @@ func (ec *executionContext) _Enrollment_courseId(ctx context.Context, field grap
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Enrollment_courseId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1712,14 +1560,11 @@ func (ec *executionContext) _Lesson_id(ctx context.Context, field graphql.Collec
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Lesson_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1844,11 +1689,14 @@ func (ec *executionContext) _Lesson_link(ctx context.Context, field graphql.Coll
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Lesson_link(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1885,14 +1733,11 @@ func (ec *executionContext) _Lesson_created_at(ctx context.Context, field graphq
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNDate2string(ctx, field.Selections, res)
+	return ec.marshalODate2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Lesson_created_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1929,14 +1774,11 @@ func (ec *executionContext) _Lesson_updated_at(ctx context.Context, field graphq
 		return graphql.Null
 	}
 	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
 		return graphql.Null
 	}
-	res := resTmp.(string)
+	res := resTmp.(*string)
 	fc.Result = res
-	return ec.marshalNDate2string(ctx, field.Selections, res)
+	return ec.marshalODate2ᚖstring(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Lesson_updated_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -1952,8 +1794,8 @@ func (ec *executionContext) fieldContext_Lesson_updated_at(ctx context.Context, 
 	return fc, nil
 }
 
-func (ec *executionContext) _Lesson_Modules(ctx context.Context, field graphql.CollectedField, obj *model.Lesson) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Lesson_Modules(ctx, field)
+func (ec *executionContext) _Lesson_stepId(ctx context.Context, field graphql.CollectedField, obj *model.Lesson) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Lesson_stepId(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -1966,7 +1808,7 @@ func (ec *executionContext) _Lesson_Modules(ctx context.Context, field graphql.C
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Modules, nil
+		return obj.StepID, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -1978,485 +1820,19 @@ func (ec *executionContext) _Lesson_Modules(ctx context.Context, field graphql.C
 		}
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Module)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNModule2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐModuleᚄ(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Lesson_Modules(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Lesson_stepId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Lesson",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Module_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Module_title(ctx, field)
-			case "description":
-				return ec.fieldContext_Module_description(ctx, field)
-			case "slug":
-				return ec.fieldContext_Module_slug(ctx, field)
-			case "created_at":
-				return ec.fieldContext_Module_created_at(ctx, field)
-			case "updated_at":
-				return ec.fieldContext_Module_updated_at(ctx, field)
-			case "Lessons":
-				return ec.fieldContext_Module_Lessons(ctx, field)
-			case "Course":
-				return ec.fieldContext_Module_Course(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Module", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Lesson_Course(ctx context.Context, field graphql.CollectedField, obj *model.Lesson) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Lesson_Course(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Course, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.([]*model.Course)
-	fc.Result = res
-	return ec.marshalNCourse2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐCourseᚄ(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Lesson_Course(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Lesson",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Course_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Course_title(ctx, field)
-			case "slug":
-				return ec.fieldContext_Course_slug(ctx, field)
-			case "description":
-				return ec.fieldContext_Course_description(ctx, field)
-			case "created_at":
-				return ec.fieldContext_Course_created_at(ctx, field)
-			case "updated_at":
-				return ec.fieldContext_Course_updated_at(ctx, field)
-			case "Lessons":
-				return ec.fieldContext_Course_Lessons(ctx, field)
-			case "Module":
-				return ec.fieldContext_Course_Module(ctx, field)
-			case "Enrollment":
-				return ec.fieldContext_Course_Enrollment(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Course", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Module_id(ctx context.Context, field graphql.CollectedField, obj *model.Module) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Module_id(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.ID, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Module_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Module",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Module_title(ctx context.Context, field graphql.CollectedField, obj *model.Module) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Module_title(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Title, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Module_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Module",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Module_description(ctx context.Context, field graphql.CollectedField, obj *model.Module) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Module_description(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Description, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Module_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Module",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Module_slug(ctx context.Context, field graphql.CollectedField, obj *model.Module) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Module_slug(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Slug, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNString2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Module_slug(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Module",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Module_created_at(ctx context.Context, field graphql.CollectedField, obj *model.Module) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Module_created_at(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.CreatedAt, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNDate2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Module_created_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Module",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Date does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Module_updated_at(ctx context.Context, field graphql.CollectedField, obj *model.Module) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Module_updated_at(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.UpdatedAt, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(string)
-	fc.Result = res
-	return ec.marshalNDate2string(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Module_updated_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Module",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Date does not have child fields")
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Module_Lessons(ctx context.Context, field graphql.CollectedField, obj *model.Module) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Module_Lessons(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Lessons, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.([]*model.Lesson)
-	fc.Result = res
-	return ec.marshalOLesson2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐLesson(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Module_Lessons(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Module",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Lesson_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Lesson_title(ctx, field)
-			case "slug":
-				return ec.fieldContext_Lesson_slug(ctx, field)
-			case "link":
-				return ec.fieldContext_Lesson_link(ctx, field)
-			case "created_at":
-				return ec.fieldContext_Lesson_created_at(ctx, field)
-			case "updated_at":
-				return ec.fieldContext_Lesson_updated_at(ctx, field)
-			case "Modules":
-				return ec.fieldContext_Lesson_Modules(ctx, field)
-			case "Course":
-				return ec.fieldContext_Lesson_Course(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Lesson", field.Name)
-		},
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Module_Course(ctx context.Context, field graphql.CollectedField, obj *model.Module) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Module_Course(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return obj.Course, nil
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		return graphql.Null
-	}
-	res := resTmp.(*model.Course)
-	fc.Result = res
-	return ec.marshalOCourse2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐCourse(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Module_Course(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Module",
-		Field:      field,
-		IsMethod:   false,
-		IsResolver: false,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Course_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Course_title(ctx, field)
-			case "slug":
-				return ec.fieldContext_Course_slug(ctx, field)
-			case "description":
-				return ec.fieldContext_Course_description(ctx, field)
-			case "created_at":
-				return ec.fieldContext_Course_created_at(ctx, field)
-			case "updated_at":
-				return ec.fieldContext_Course_updated_at(ctx, field)
-			case "Lessons":
-				return ec.fieldContext_Course_Lessons(ctx, field)
-			case "Module":
-				return ec.fieldContext_Course_Module(ctx, field)
-			case "Enrollment":
-				return ec.fieldContext_Course_Enrollment(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Course", field.Name)
 		},
 	}
 	return fc, nil
@@ -2588,10 +1964,10 @@ func (ec *executionContext) fieldContext_Mutation_createCourse(ctx context.Conte
 				return ec.fieldContext_Course_updated_at(ctx, field)
 			case "Lessons":
 				return ec.fieldContext_Course_Lessons(ctx, field)
-			case "Module":
-				return ec.fieldContext_Course_Module(ctx, field)
-			case "Enrollment":
-				return ec.fieldContext_Course_Enrollment(ctx, field)
+			case "Steps":
+				return ec.fieldContext_Course_Steps(ctx, field)
+			case "Enrollments":
+				return ec.fieldContext_Course_Enrollments(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Course", field.Name)
 		},
@@ -2610,8 +1986,8 @@ func (ec *executionContext) fieldContext_Mutation_createCourse(ctx context.Conte
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_createModule(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_createModule(ctx, field)
+func (ec *executionContext) _Mutation_createStep(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createStep(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2624,7 +2000,7 @@ func (ec *executionContext) _Mutation_createModule(ctx context.Context, field gr
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateModule(rctx, fc.Args["input"].(model.NewModule))
+		return ec.resolvers.Mutation().CreateStep(rctx, fc.Args["input"].(model.NewStep))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2636,12 +2012,12 @@ func (ec *executionContext) _Mutation_createModule(ctx context.Context, field gr
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.Module)
+	res := resTmp.(*model.Step)
 	fc.Result = res
-	return ec.marshalNModule2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐModule(ctx, field.Selections, res)
+	return ec.marshalNStep2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐStep(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_createModule(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_createStep(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
@@ -2650,23 +2026,25 @@ func (ec *executionContext) fieldContext_Mutation_createModule(ctx context.Conte
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_Module_id(ctx, field)
+				return ec.fieldContext_Step_id(ctx, field)
 			case "title":
-				return ec.fieldContext_Module_title(ctx, field)
+				return ec.fieldContext_Step_title(ctx, field)
 			case "description":
-				return ec.fieldContext_Module_description(ctx, field)
+				return ec.fieldContext_Step_description(ctx, field)
 			case "slug":
-				return ec.fieldContext_Module_slug(ctx, field)
+				return ec.fieldContext_Step_slug(ctx, field)
 			case "created_at":
-				return ec.fieldContext_Module_created_at(ctx, field)
+				return ec.fieldContext_Step_created_at(ctx, field)
 			case "updated_at":
-				return ec.fieldContext_Module_updated_at(ctx, field)
-			case "Lessons":
-				return ec.fieldContext_Module_Lessons(ctx, field)
+				return ec.fieldContext_Step_updated_at(ctx, field)
+			case "lessons":
+				return ec.fieldContext_Step_lessons(ctx, field)
 			case "Course":
-				return ec.fieldContext_Module_Course(ctx, field)
+				return ec.fieldContext_Step_Course(ctx, field)
+			case "courseId":
+				return ec.fieldContext_Step_courseId(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Module", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Step", field.Name)
 		},
 	}
 	defer func() {
@@ -2676,7 +2054,7 @@ func (ec *executionContext) fieldContext_Mutation_createModule(ctx context.Conte
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_createModule_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_createStep_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -2734,10 +2112,8 @@ func (ec *executionContext) fieldContext_Mutation_createLesson(ctx context.Conte
 				return ec.fieldContext_Lesson_created_at(ctx, field)
 			case "updated_at":
 				return ec.fieldContext_Lesson_updated_at(ctx, field)
-			case "Modules":
-				return ec.fieldContext_Lesson_Modules(ctx, field)
-			case "Course":
-				return ec.fieldContext_Lesson_Course(ctx, field)
+			case "stepId":
+				return ec.fieldContext_Lesson_stepId(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Lesson", field.Name)
 		},
@@ -2803,10 +2179,6 @@ func (ec *executionContext) fieldContext_Mutation_createEnrollment(ctx context.C
 				return ec.fieldContext_Enrollment_updated_at(ctx, field)
 			case "deleted_at":
 				return ec.fieldContext_Enrollment_deleted_at(ctx, field)
-			case "user":
-				return ec.fieldContext_Enrollment_user(ctx, field)
-			case "course":
-				return ec.fieldContext_Enrollment_course(ctx, field)
 			case "userId":
 				return ec.fieldContext_Enrollment_userId(ctx, field)
 			case "courseId":
@@ -2938,10 +2310,10 @@ func (ec *executionContext) fieldContext_Query_courses(ctx context.Context, fiel
 				return ec.fieldContext_Course_updated_at(ctx, field)
 			case "Lessons":
 				return ec.fieldContext_Course_Lessons(ctx, field)
-			case "Module":
-				return ec.fieldContext_Course_Module(ctx, field)
-			case "Enrollment":
-				return ec.fieldContext_Course_Enrollment(ctx, field)
+			case "Steps":
+				return ec.fieldContext_Course_Steps(ctx, field)
+			case "Enrollments":
+				return ec.fieldContext_Course_Enrollments(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Course", field.Name)
 		},
@@ -2949,8 +2321,8 @@ func (ec *executionContext) fieldContext_Query_courses(ctx context.Context, fiel
 	return fc, nil
 }
 
-func (ec *executionContext) _Query_modules(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Query_modules(ctx, field)
+func (ec *executionContext) _Query_steps(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_steps(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -2963,7 +2335,7 @@ func (ec *executionContext) _Query_modules(ctx context.Context, field graphql.Co
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Query().Modules(rctx)
+		return ec.resolvers.Query().Steps(rctx)
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -2972,12 +2344,12 @@ func (ec *executionContext) _Query_modules(ctx context.Context, field graphql.Co
 	if resTmp == nil {
 		return graphql.Null
 	}
-	res := resTmp.([]*model.Module)
+	res := resTmp.([]*model.Step)
 	fc.Result = res
-	return ec.marshalOModule2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐModule(ctx, field.Selections, res)
+	return ec.marshalOStep2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐStep(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Query_modules(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Query_steps(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Query",
 		Field:      field,
@@ -2986,23 +2358,25 @@ func (ec *executionContext) fieldContext_Query_modules(ctx context.Context, fiel
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_Module_id(ctx, field)
+				return ec.fieldContext_Step_id(ctx, field)
 			case "title":
-				return ec.fieldContext_Module_title(ctx, field)
+				return ec.fieldContext_Step_title(ctx, field)
 			case "description":
-				return ec.fieldContext_Module_description(ctx, field)
+				return ec.fieldContext_Step_description(ctx, field)
 			case "slug":
-				return ec.fieldContext_Module_slug(ctx, field)
+				return ec.fieldContext_Step_slug(ctx, field)
 			case "created_at":
-				return ec.fieldContext_Module_created_at(ctx, field)
+				return ec.fieldContext_Step_created_at(ctx, field)
 			case "updated_at":
-				return ec.fieldContext_Module_updated_at(ctx, field)
-			case "Lessons":
-				return ec.fieldContext_Module_Lessons(ctx, field)
+				return ec.fieldContext_Step_updated_at(ctx, field)
+			case "lessons":
+				return ec.fieldContext_Step_lessons(ctx, field)
 			case "Course":
-				return ec.fieldContext_Module_Course(ctx, field)
+				return ec.fieldContext_Step_Course(ctx, field)
+			case "courseId":
+				return ec.fieldContext_Step_courseId(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type Module", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Step", field.Name)
 		},
 	}
 	return fc, nil
@@ -3056,10 +2430,8 @@ func (ec *executionContext) fieldContext_Query_lessons(ctx context.Context, fiel
 				return ec.fieldContext_Lesson_created_at(ctx, field)
 			case "updated_at":
 				return ec.fieldContext_Lesson_updated_at(ctx, field)
-			case "Modules":
-				return ec.fieldContext_Lesson_Modules(ctx, field)
-			case "Course":
-				return ec.fieldContext_Lesson_Course(ctx, field)
+			case "stepId":
+				return ec.fieldContext_Lesson_stepId(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type Lesson", field.Name)
 		},
@@ -3111,10 +2483,6 @@ func (ec *executionContext) fieldContext_Query_enrollments(ctx context.Context, 
 				return ec.fieldContext_Enrollment_updated_at(ctx, field)
 			case "deleted_at":
 				return ec.fieldContext_Enrollment_deleted_at(ctx, field)
-			case "user":
-				return ec.fieldContext_Enrollment_user(ctx, field)
-			case "course":
-				return ec.fieldContext_Enrollment_course(ctx, field)
 			case "userId":
 				return ec.fieldContext_Enrollment_userId(ctx, field)
 			case "courseId":
@@ -3250,6 +2618,435 @@ func (ec *executionContext) fieldContext_Query___schema(ctx context.Context, fie
 				return ec.fieldContext___Schema_directives(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type __Schema", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Step_id(ctx context.Context, field graphql.CollectedField, obj *model.Step) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Step_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Step_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Step",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Step_title(ctx context.Context, field graphql.CollectedField, obj *model.Step) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Step_title(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Title, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Step_title(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Step",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Step_description(ctx context.Context, field graphql.CollectedField, obj *model.Step) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Step_description(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Description, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Step_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Step",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Step_slug(ctx context.Context, field graphql.CollectedField, obj *model.Step) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Step_slug(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Slug, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Step_slug(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Step",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Step_created_at(ctx context.Context, field graphql.CollectedField, obj *model.Step) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Step_created_at(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNDate2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Step_created_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Step",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Step_updated_at(ctx context.Context, field graphql.CollectedField, obj *model.Step) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Step_updated_at(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UpdatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNDate2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Step_updated_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Step",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Step_lessons(ctx context.Context, field graphql.CollectedField, obj *model.Step) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Step_lessons(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Lessons, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Lesson)
+	fc.Result = res
+	return ec.marshalOLesson2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐLesson(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Step_lessons(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Step",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Lesson_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Lesson_title(ctx, field)
+			case "slug":
+				return ec.fieldContext_Lesson_slug(ctx, field)
+			case "link":
+				return ec.fieldContext_Lesson_link(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Lesson_created_at(ctx, field)
+			case "updated_at":
+				return ec.fieldContext_Lesson_updated_at(ctx, field)
+			case "stepId":
+				return ec.fieldContext_Lesson_stepId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Lesson", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Step_Course(ctx context.Context, field graphql.CollectedField, obj *model.Step) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Step_Course(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Course, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Course)
+	fc.Result = res
+	return ec.marshalNCourse2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐCourse(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Step_Course(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Step",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Course_id(ctx, field)
+			case "title":
+				return ec.fieldContext_Course_title(ctx, field)
+			case "slug":
+				return ec.fieldContext_Course_slug(ctx, field)
+			case "description":
+				return ec.fieldContext_Course_description(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Course_created_at(ctx, field)
+			case "updated_at":
+				return ec.fieldContext_Course_updated_at(ctx, field)
+			case "Lessons":
+				return ec.fieldContext_Course_Lessons(ctx, field)
+			case "Steps":
+				return ec.fieldContext_Course_Steps(ctx, field)
+			case "Enrollments":
+				return ec.fieldContext_Course_Enrollments(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Course", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Step_courseId(ctx context.Context, field graphql.CollectedField, obj *model.Step) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Step_courseId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CourseID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Step_courseId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Step",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	return fc, nil
@@ -3604,10 +3401,6 @@ func (ec *executionContext) fieldContext_User_Enrollment(ctx context.Context, fi
 				return ec.fieldContext_Enrollment_updated_at(ctx, field)
 			case "deleted_at":
 				return ec.fieldContext_Enrollment_deleted_at(ctx, field)
-			case "user":
-				return ec.fieldContext_Enrollment_user(ctx, field)
-			case "course":
-				return ec.fieldContext_Enrollment_course(ctx, field)
 			case "userId":
 				return ec.fieldContext_Enrollment_userId(ctx, field)
 			case "courseId":
@@ -5486,7 +5279,7 @@ func (ec *executionContext) unmarshalInputNewEnrollment(ctx context.Context, obj
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("created_at"))
-			it.CreatedAt, err = ec.unmarshalNDate2string(ctx, v)
+			it.CreatedAt, err = ec.unmarshalODate2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5494,7 +5287,7 @@ func (ec *executionContext) unmarshalInputNewEnrollment(ctx context.Context, obj
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updated_at"))
-			it.UpdatedAt, err = ec.unmarshalNDate2string(ctx, v)
+			it.UpdatedAt, err = ec.unmarshalODate2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5502,7 +5295,7 @@ func (ec *executionContext) unmarshalInputNewEnrollment(ctx context.Context, obj
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deleted_at"))
-			it.DeletedAt, err = ec.unmarshalNDate2string(ctx, v)
+			it.DeletedAt, err = ec.unmarshalODate2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5535,21 +5328,13 @@ func (ec *executionContext) unmarshalInputNewLesson(ctx context.Context, obj int
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "title", "slug", "link", "moduleId", "courseId"}
+	fieldsInOrder := [...]string{"title", "slug", "link", "stepId"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "id":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "title":
 			var err error
 
@@ -5574,19 +5359,11 @@ func (ec *executionContext) unmarshalInputNewLesson(ctx context.Context, obj int
 			if err != nil {
 				return it, err
 			}
-		case "moduleId":
+		case "stepId":
 			var err error
 
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("moduleId"))
-			it.ModuleID, err = ec.unmarshalOString2ᚕᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "courseId":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("courseId"))
-			it.CourseID, err = ec.unmarshalOString2ᚕᚖstring(ctx, v)
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("stepId"))
+			it.StepID, err = ec.unmarshalNString2string(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5596,28 +5373,20 @@ func (ec *executionContext) unmarshalInputNewLesson(ctx context.Context, obj int
 	return it, nil
 }
 
-func (ec *executionContext) unmarshalInputNewModule(ctx context.Context, obj interface{}) (model.NewModule, error) {
-	var it model.NewModule
+func (ec *executionContext) unmarshalInputNewStep(ctx context.Context, obj interface{}) (model.NewStep, error) {
+	var it model.NewStep
 	asMap := map[string]interface{}{}
 	for k, v := range obj.(map[string]interface{}) {
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "title", "description", "slug", "created_at", "updated_at", "courseId"}
+	fieldsInOrder := [...]string{"title", "description", "slug", "created_at", "updated_at", "courseId"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "id":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "title":
 			var err error
 
@@ -5646,7 +5415,7 @@ func (ec *executionContext) unmarshalInputNewModule(ctx context.Context, obj int
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("created_at"))
-			it.CreatedAt, err = ec.unmarshalNDate2string(ctx, v)
+			it.CreatedAt, err = ec.unmarshalODate2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5654,7 +5423,7 @@ func (ec *executionContext) unmarshalInputNewModule(ctx context.Context, obj int
 			var err error
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updated_at"))
-			it.UpdatedAt, err = ec.unmarshalNDate2string(ctx, v)
+			it.UpdatedAt, err = ec.unmarshalODate2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5809,13 +5578,13 @@ func (ec *executionContext) _Course(ctx context.Context, sel ast.SelectionSet, o
 
 			out.Values[i] = ec._Course_Lessons(ctx, field, obj)
 
-		case "Module":
+		case "Steps":
 
-			out.Values[i] = ec._Course_Module(ctx, field, obj)
+			out.Values[i] = ec._Course_Steps(ctx, field, obj)
 
-		case "Enrollment":
+		case "Enrollments":
 
-			out.Values[i] = ec._Course_Enrollment(ctx, field, obj)
+			out.Values[i] = ec._Course_Enrollments(ctx, field, obj)
 
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
@@ -5856,38 +5625,24 @@ func (ec *executionContext) _Enrollment(ctx context.Context, sel ast.SelectionSe
 
 			out.Values[i] = ec._Enrollment_updated_at(ctx, field, obj)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "deleted_at":
 
 			out.Values[i] = ec._Enrollment_deleted_at(ctx, field, obj)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "user":
-
-			out.Values[i] = ec._Enrollment_user(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "course":
-
-			out.Values[i] = ec._Enrollment_course(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "userId":
 
 			out.Values[i] = ec._Enrollment_userId(ctx, field, obj)
 
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "courseId":
 
 			out.Values[i] = ec._Enrollment_courseId(ctx, field, obj)
 
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -5913,9 +5668,6 @@ func (ec *executionContext) _Lesson(ctx context.Context, sel ast.SelectionSet, o
 
 			out.Values[i] = ec._Lesson_id(ctx, field, obj)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "title":
 
 			out.Values[i] = ec._Lesson_title(ctx, field, obj)
@@ -5934,105 +5686,24 @@ func (ec *executionContext) _Lesson(ctx context.Context, sel ast.SelectionSet, o
 
 			out.Values[i] = ec._Lesson_link(ctx, field, obj)
 
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "created_at":
 
 			out.Values[i] = ec._Lesson_created_at(ctx, field, obj)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "updated_at":
 
 			out.Values[i] = ec._Lesson_updated_at(ctx, field, obj)
 
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "Modules":
+		case "stepId":
 
-			out.Values[i] = ec._Lesson_Modules(ctx, field, obj)
+			out.Values[i] = ec._Lesson_stepId(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "Course":
-
-			out.Values[i] = ec._Lesson_Course(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		default:
-			panic("unknown field " + strconv.Quote(field.Name))
-		}
-	}
-	out.Dispatch()
-	if invalids > 0 {
-		return graphql.Null
-	}
-	return out
-}
-
-var moduleImplementors = []string{"Module"}
-
-func (ec *executionContext) _Module(ctx context.Context, sel ast.SelectionSet, obj *model.Module) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, moduleImplementors)
-	out := graphql.NewFieldSet(fields)
-	var invalids uint32
-	for i, field := range fields {
-		switch field.Name {
-		case "__typename":
-			out.Values[i] = graphql.MarshalString("Module")
-		case "id":
-
-			out.Values[i] = ec._Module_id(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "title":
-
-			out.Values[i] = ec._Module_title(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "description":
-
-			out.Values[i] = ec._Module_description(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "slug":
-
-			out.Values[i] = ec._Module_slug(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "created_at":
-
-			out.Values[i] = ec._Module_created_at(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "updated_at":
-
-			out.Values[i] = ec._Module_updated_at(ctx, field, obj)
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "Lessons":
-
-			out.Values[i] = ec._Module_Lessons(ctx, field, obj)
-
-		case "Course":
-
-			out.Values[i] = ec._Module_Course(ctx, field, obj)
-
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6081,10 +5752,10 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "createModule":
+		case "createStep":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_createModule(ctx, field)
+				return ec._Mutation_createStep(ctx, field)
 			})
 
 			if out.Values[i] == graphql.Null {
@@ -6178,7 +5849,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 			out.Concurrently(i, func() graphql.Marshaler {
 				return rrm(innerCtx)
 			})
-		case "modules":
+		case "steps":
 			field := field
 
 			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
@@ -6187,7 +5858,7 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 						ec.Error(ctx, ec.Recover(ctx, r))
 					}
 				}()
-				res = ec._Query_modules(ctx, field)
+				res = ec._Query_steps(ctx, field)
 				return res
 			}
 
@@ -6250,6 +5921,87 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 				return ec._Query___schema(ctx, field)
 			})
 
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
+var stepImplementors = []string{"Step"}
+
+func (ec *executionContext) _Step(ctx context.Context, sel ast.SelectionSet, obj *model.Step) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, stepImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Step")
+		case "id":
+
+			out.Values[i] = ec._Step_id(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "title":
+
+			out.Values[i] = ec._Step_title(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "description":
+
+			out.Values[i] = ec._Step_description(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "slug":
+
+			out.Values[i] = ec._Step_slug(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "created_at":
+
+			out.Values[i] = ec._Step_created_at(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "updated_at":
+
+			out.Values[i] = ec._Step_updated_at(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "lessons":
+
+			out.Values[i] = ec._Step_lessons(ctx, field, obj)
+
+		case "Course":
+
+			out.Values[i] = ec._Step_Course(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "courseId":
+
+			out.Values[i] = ec._Step_courseId(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}
@@ -6669,50 +6421,6 @@ func (ec *executionContext) marshalNCourse2githubᚗcomᚋlaurentino14ᚋuserᚋ
 	return ec._Course(ctx, sel, &v)
 }
 
-func (ec *executionContext) marshalNCourse2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐCourseᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Course) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNCourse2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐCourse(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
 func (ec *executionContext) marshalNCourse2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐCourse(ctx context.Context, sel ast.SelectionSet, v *model.Course) graphql.Marshaler {
 	if v == nil {
 		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
@@ -6766,64 +6474,6 @@ func (ec *executionContext) marshalNLesson2ᚖgithubᚗcomᚋlaurentino14ᚋuser
 	return ec._Lesson(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNModule2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐModule(ctx context.Context, sel ast.SelectionSet, v model.Module) graphql.Marshaler {
-	return ec._Module(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNModule2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐModuleᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Module) graphql.Marshaler {
-	ret := make(graphql.Array, len(v))
-	var wg sync.WaitGroup
-	isLen1 := len(v) == 1
-	if !isLen1 {
-		wg.Add(len(v))
-	}
-	for i := range v {
-		i := i
-		fc := &graphql.FieldContext{
-			Index:  &i,
-			Result: &v[i],
-		}
-		ctx := graphql.WithFieldContext(ctx, fc)
-		f := func(i int) {
-			defer func() {
-				if r := recover(); r != nil {
-					ec.Error(ctx, ec.Recover(ctx, r))
-					ret = nil
-				}
-			}()
-			if !isLen1 {
-				defer wg.Done()
-			}
-			ret[i] = ec.marshalNModule2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐModule(ctx, sel, v[i])
-		}
-		if isLen1 {
-			f(i)
-		} else {
-			go f(i)
-		}
-
-	}
-	wg.Wait()
-
-	for _, e := range ret {
-		if e == graphql.Null {
-			return graphql.Null
-		}
-	}
-
-	return ret
-}
-
-func (ec *executionContext) marshalNModule2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐModule(ctx context.Context, sel ast.SelectionSet, v *model.Module) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._Module(ctx, sel, v)
-}
-
 func (ec *executionContext) unmarshalNNewCourse2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewCourse(ctx context.Context, v interface{}) (model.NewCourse, error) {
 	res, err := ec.unmarshalInputNewCourse(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -6839,14 +6489,28 @@ func (ec *executionContext) unmarshalNNewLesson2githubᚗcomᚋlaurentino14ᚋus
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
-func (ec *executionContext) unmarshalNNewModule2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewModule(ctx context.Context, v interface{}) (model.NewModule, error) {
-	res, err := ec.unmarshalInputNewModule(ctx, v)
+func (ec *executionContext) unmarshalNNewStep2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewStep(ctx context.Context, v interface{}) (model.NewStep, error) {
+	res, err := ec.unmarshalInputNewStep(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
 func (ec *executionContext) unmarshalNNewUser2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewUser(ctx context.Context, v interface{}) (model.NewUser, error) {
 	res, err := ec.unmarshalInputNewUser(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalNStep2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐStep(ctx context.Context, sel ast.SelectionSet, v model.Step) graphql.Marshaler {
+	return ec._Step(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNStep2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐStep(ctx context.Context, sel ast.SelectionSet, v *model.Step) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Step(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {
@@ -7317,7 +6981,7 @@ func (ec *executionContext) marshalOLesson2ᚖgithubᚗcomᚋlaurentino14ᚋuser
 	return ec._Lesson(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalOModule2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐModule(ctx context.Context, sel ast.SelectionSet, v []*model.Module) graphql.Marshaler {
+func (ec *executionContext) marshalOStep2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐStep(ctx context.Context, sel ast.SelectionSet, v []*model.Step) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
@@ -7344,7 +7008,7 @@ func (ec *executionContext) marshalOModule2ᚕᚖgithubᚗcomᚋlaurentino14ᚋu
 			if !isLen1 {
 				defer wg.Done()
 			}
-			ret[i] = ec.marshalOModule2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐModule(ctx, sel, v[i])
+			ret[i] = ec.marshalOStep2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐStep(ctx, sel, v[i])
 		}
 		if isLen1 {
 			f(i)
@@ -7358,43 +7022,11 @@ func (ec *executionContext) marshalOModule2ᚕᚖgithubᚗcomᚋlaurentino14ᚋu
 	return ret
 }
 
-func (ec *executionContext) marshalOModule2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐModule(ctx context.Context, sel ast.SelectionSet, v *model.Module) graphql.Marshaler {
+func (ec *executionContext) marshalOStep2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐStep(ctx context.Context, sel ast.SelectionSet, v *model.Step) graphql.Marshaler {
 	if v == nil {
 		return graphql.Null
 	}
-	return ec._Module(ctx, sel, v)
-}
-
-func (ec *executionContext) unmarshalOString2ᚕᚖstring(ctx context.Context, v interface{}) ([]*string, error) {
-	if v == nil {
-		return nil, nil
-	}
-	var vSlice []interface{}
-	if v != nil {
-		vSlice = graphql.CoerceList(v)
-	}
-	var err error
-	res := make([]*string, len(vSlice))
-	for i := range vSlice {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithIndex(i))
-		res[i], err = ec.unmarshalOString2ᚖstring(ctx, vSlice[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-	return res, nil
-}
-
-func (ec *executionContext) marshalOString2ᚕᚖstring(ctx context.Context, sel ast.SelectionSet, v []*string) graphql.Marshaler {
-	if v == nil {
-		return graphql.Null
-	}
-	ret := make(graphql.Array, len(v))
-	for i := range v {
-		ret[i] = ec.marshalOString2ᚖstring(ctx, sel, v[i])
-	}
-
-	return ret
+	return ec._Step(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalOString2ᚖstring(ctx context.Context, v interface{}) (*string, error) {

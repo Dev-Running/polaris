@@ -36,6 +36,8 @@ func GetAllCourses(ctx context.Context) []*model.Course {
 			Description: &list.Description,
 			CreatedAt:   list.CreatedAt.String(),
 			UpdatedAt:   list.UpdatedAt.String(),
+			Lessons:     nil,
+			Enrollments: nil,
 		}
 		allCourses = append(allCourses, user)
 	}

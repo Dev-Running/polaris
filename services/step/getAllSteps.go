@@ -1,4 +1,4 @@
-package module
+package step
 
 import (
 	"context"
@@ -6,7 +6,7 @@ import (
 	"github.com/laurentino14/user/prisma"
 )
 
-func GetAllModules(ctx context.Context) []*model.Module {
+func GetAllSteps(ctx context.Context) []*model.Step {
 	client := prisma.NewClient()
 
 	if err := client.Prisma.Connect(); err != nil {
@@ -19,17 +19,17 @@ func GetAllModules(ctx context.Context) []*model.Module {
 		}
 	}()
 
-	exec, err := client.Module.FindMany().Take(10).Exec(ctx)
+	exec, err := client.Step.FindMany().Take(10).Exec(ctx)
 
 	if err != nil {
 		return nil
 	}
 
-	allModules := []*model.Module{}
+	allSteps := []*model.Step{}
 
 	for _, list := range exec {
 
-		user := &model.Module{
+		user := &model.Step{
 			ID:          list.ID,
 			Title:       list.Title,
 			Slug:        list.Slug,
@@ -37,10 +37,10 @@ func GetAllModules(ctx context.Context) []*model.Module {
 			CreatedAt:   list.CreatedAt.String(),
 			UpdatedAt:   list.UpdatedAt.String(),
 			Lessons:     nil,
-			Course:      nil,
+			CourseID:    list.CourseID,
 		}
-		allModules = append(allModules, user)
+		allSteps = append(allSteps, user)
 	}
 
-	return allModules
+	return allSteps
 }

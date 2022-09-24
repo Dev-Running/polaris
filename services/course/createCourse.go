@@ -37,8 +37,8 @@ func CreateCourse(input model.NewCourse, ctx context.Context) (*model.Course, er
 		CreatedAt:   exec.CreatedAt.String(),
 		UpdatedAt:   exec.UpdatedAt.String(),
 		Lessons:     nil,
-		Module:      nil,
-		Enrollment:  nil,
+		Steps:       nil,
+		Enrollments: nil,
 	}
 	return courseData, nil
 }

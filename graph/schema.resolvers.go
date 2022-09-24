@@ -6,12 +6,13 @@ package graph
 import (
 	"context"
 	"fmt"
-	"github.com/laurentino14/user/useCases/course"
-	"github.com/laurentino14/user/useCases/module"
+	"github.com/laurentino14/user/services/lesson"
 
 	"github.com/laurentino14/user/graph/generated"
 	"github.com/laurentino14/user/graph/model"
-	"github.com/laurentino14/user/useCases/user"
+	"github.com/laurentino14/user/services/course"
+	"github.com/laurentino14/user/services/step"
+	"github.com/laurentino14/user/services/user"
 )
 
 // CreateUser is the resolver for the createUser field.
@@ -27,21 +28,31 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) 
 // CreateCourse is the resolver for the createCourse field.
 func (r *mutationResolver) CreateCourse(ctx context.Context, input model.NewCourse) (*model.Course, error) {
 	courseData, err := course.CreateCourse(input, ctx)
-	if courseData == nil {
+	if err != nil {
 		return nil, fmt.Errorf("Este curso já existe!")
 	}
 
 	return courseData, err
 }
 
-// CreateModule is the resolver for the createModule field.
-func (r *mutationResolver) CreateModule(ctx context.Context, input model.NewModule) (*model.Module, error) {
-	panic(fmt.Errorf("not implemented: CreateModule - createModule"))
+// CreateStep is the resolver for the createStep field.
+func (r *mutationResolver) CreateStep(ctx context.Context, input model.NewStep) (*model.Step, error) {
+	stepData, err := step.CreateStep(input, ctx)
+	if stepData == nil {
+		return nil, err
+	}
+
+	return stepData, err
 }
 
 // CreateLesson is the resolver for the createLesson field.
 func (r *mutationResolver) CreateLesson(ctx context.Context, input model.NewLesson) (*model.Lesson, error) {
-	panic(fmt.Errorf("not implemented: CreateLesson - createLesson"))
+	lessonData, err := lesson.CreateLesson(input, ctx, r.Connect)
+	if lessonData == nil {
+		return nil, err
+	}
+
+	return lessonData, err
 }
 
 // CreateEnrollment is the resolver for the createEnrollment field.
@@ -69,19 +80,24 @@ func (r *queryResolver) Courses(ctx context.Context) ([]*model.Course, error) {
 	return coursesData, nil
 }
 
-// Modules is the resolver for the modules field.
-func (r *queryResolver) Modules(ctx context.Context) ([]*model.Module, error) {
-	coursesData := module.GetAllModules(ctx)
-	if coursesData == nil {
+// Steps is the resolver for the steps field.
+func (r *queryResolver) Steps(ctx context.Context) ([]*model.Step, error) {
+	stepsData := step.GetAllSteps(ctx)
+	if stepsData == nil {
 		return nil, fmt.Errorf("Erro de conexão com o banco de dados")
 	}
 
-	return coursesData, nil
+	return stepsData, nil
 }
 
 // Lessons is the resolver for the lessons field.
 func (r *queryResolver) Lessons(ctx context.Context) ([]*model.Lesson, error) {
-	panic(fmt.Errorf("not implemented: Lessons - lessons"))
+	lessonsData := lesson.GetAllLessons(ctx)
+	if lessonsData == nil {
+		return nil, fmt.Errorf("Erro de conexão com o banco de dados")
+	}
+
+	return lessonsData, nil
 }
 
 // Enrollments is the resolver for the enrollments field.
@@ -96,4 +112,6 @@ func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResol
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
-type queryResolver struct{ *Resolver }
+type queryResolver struct {
+	*Resolver
+}

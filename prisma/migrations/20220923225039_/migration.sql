@@ -6,10 +6,9 @@ CREATE TABLE "users" (
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
     "cellphone" TEXT NOT NULL,
-    "birth_date" TIMESTAMP(3) NOT NULL,
     "token_user" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "created_at" DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" DATE NOT NULL,
 
     CONSTRAINT "users_pkey" PRIMARY KEY ("id")
 );
@@ -20,8 +19,8 @@ CREATE TABLE "courses" (
     "title" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
     "description" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "created_at" DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" DATE NOT NULL,
 
     CONSTRAINT "courses_pkey" PRIMARY KEY ("id")
 );
@@ -29,11 +28,9 @@ CREATE TABLE "courses" (
 -- CreateTable
 CREATE TABLE "enrollments" (
     "id" TEXT NOT NULL,
-    "user_id" TEXT NOT NULL,
-    "course_id" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3),
-    "updated_at" TIMESTAMP(3) NOT NULL,
-    "deleted_at" TIMESTAMP(3),
+    "created_at" DATE NOT NULL,
+    "updated_at" DATE,
+    "deleted_at" DATE,
     "userId" TEXT NOT NULL,
     "courseId" TEXT NOT NULL,
 
@@ -41,16 +38,16 @@ CREATE TABLE "enrollments" (
 );
 
 -- CreateTable
-CREATE TABLE "modules" (
+CREATE TABLE "steps" (
     "id" TEXT NOT NULL,
     "title" TEXT NOT NULL,
     "description" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
+    "created_at" DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" DATE NOT NULL,
     "courseId" TEXT NOT NULL,
 
-    CONSTRAINT "modules_pkey" PRIMARY KEY ("id")
+    CONSTRAINT "steps_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -59,10 +56,9 @@ CREATE TABLE "lessons" (
     "title" TEXT NOT NULL,
     "slug" TEXT NOT NULL,
     "link" TEXT NOT NULL,
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-    "courseId" TEXT NOT NULL,
-    "moduleId" TEXT NOT NULL,
+    "created_at" DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" DATE NOT NULL,
+    "stepId" TEXT NOT NULL,
 
     CONSTRAINT "lessons_pkey" PRIMARY KEY ("id")
 );
@@ -80,10 +76,10 @@ CREATE UNIQUE INDEX "courses_title_key" ON "courses"("title");
 CREATE UNIQUE INDEX "courses_slug_key" ON "courses"("slug");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "modules_title_key" ON "modules"("title");
+CREATE UNIQUE INDEX "steps_title_key" ON "steps"("title");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "modules_slug_key" ON "modules"("slug");
+CREATE UNIQUE INDEX "steps_slug_key" ON "steps"("slug");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "lessons_title_key" ON "lessons"("title");
@@ -101,10 +97,7 @@ ALTER TABLE "enrollments" ADD CONSTRAINT "enrollments_userId_fkey" FOREIGN KEY (
 ALTER TABLE "enrollments" ADD CONSTRAINT "enrollments_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "courses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "modules" ADD CONSTRAINT "modules_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "courses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "steps" ADD CONSTRAINT "steps_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "courses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "lessons" ADD CONSTRAINT "lessons_courseId_fkey" FOREIGN KEY ("courseId") REFERENCES "courses"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "lessons" ADD CONSTRAINT "lessons_moduleId_fkey" FOREIGN KEY ("moduleId") REFERENCES "modules"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "lessons" ADD CONSTRAINT "lessons_stepId_fkey" FOREIGN KEY ("stepId") REFERENCES "steps"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

@@ -10,41 +10,27 @@ type Course struct {
 	CreatedAt   string        `json:"created_at"`
 	UpdatedAt   string        `json:"updated_at"`
 	Lessons     []*Lesson     `json:"Lessons"`
-	Module      []*Module     `json:"Module"`
-	Enrollment  []*Enrollment `json:"Enrollment"`
+	Steps       []*Step       `json:"Steps"`
+	Enrollments []*Enrollment `json:"Enrollments"`
 }
 
 type Enrollment struct {
 	ID        string  `json:"id"`
 	CreatedAt string  `json:"created_at"`
-	UpdatedAt string  `json:"updated_at"`
-	DeletedAt string  `json:"deleted_at"`
-	User      *User   `json:"user"`
-	Course    *Course `json:"course"`
-	UserID    *string `json:"userId"`
-	CourseID  *string `json:"courseId"`
+	UpdatedAt *string `json:"updated_at"`
+	DeletedAt *string `json:"deleted_at"`
+	UserID    string  `json:"userId"`
+	CourseID  string  `json:"courseId"`
 }
 
 type Lesson struct {
-	ID        string    `json:"id"`
-	Title     string    `json:"title"`
-	Slug      string    `json:"slug"`
-	Link      *string   `json:"link"`
-	CreatedAt string    `json:"created_at"`
-	UpdatedAt string    `json:"updated_at"`
-	Modules   []*Module `json:"Modules"`
-	Course    []*Course `json:"Course"`
-}
-
-type Module struct {
-	ID          string    `json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Slug        string    `json:"slug"`
-	CreatedAt   string    `json:"created_at"`
-	UpdatedAt   string    `json:"updated_at"`
-	Lessons     []*Lesson `json:"Lessons"`
-	Course      *Course   `json:"Course"`
+	ID        *string `json:"id"`
+	Title     string  `json:"title"`
+	Slug      string  `json:"slug"`
+	Link      string  `json:"link"`
+	CreatedAt *string `json:"created_at"`
+	UpdatedAt *string `json:"updated_at"`
+	StepID    string  `json:"stepId"`
 }
 
 type NewCourse struct {
@@ -57,31 +43,28 @@ type NewCourse struct {
 }
 
 type NewEnrollment struct {
-	ID        string `json:"id"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
-	DeletedAt string `json:"deleted_at"`
-	UserID    string `json:"userId"`
-	CourseID  string `json:"courseId"`
+	ID        string  `json:"id"`
+	CreatedAt *string `json:"created_at"`
+	UpdatedAt *string `json:"updated_at"`
+	DeletedAt *string `json:"deleted_at"`
+	UserID    string  `json:"userId"`
+	CourseID  string  `json:"courseId"`
 }
 
 type NewLesson struct {
-	ID       string    `json:"id"`
-	Title    string    `json:"title"`
-	Slug     string    `json:"slug"`
-	Link     string    `json:"link"`
-	ModuleID []*string `json:"moduleId"`
-	CourseID []*string `json:"courseId"`
+	Title  string `json:"title"`
+	Slug   string `json:"slug"`
+	Link   string `json:"link"`
+	StepID string `json:"stepId"`
 }
 
-type NewModule struct {
-	ID          string `json:"id"`
-	Title       string `json:"title"`
-	Description string `json:"description"`
-	Slug        string `json:"slug"`
-	CreatedAt   string `json:"created_at"`
-	UpdatedAt   string `json:"updated_at"`
-	CourseID    string `json:"courseId"`
+type NewStep struct {
+	Title       string  `json:"title"`
+	Description string  `json:"description"`
+	Slug        string  `json:"slug"`
+	CreatedAt   *string `json:"created_at"`
+	UpdatedAt   *string `json:"updated_at"`
+	CourseID    string  `json:"courseId"`
 }
 
 type NewUser struct {
@@ -92,6 +75,18 @@ type NewUser struct {
 	Password  string  `json:"password"`
 	Cellphone string  `json:"cellphone"`
 	TokenUser *string `json:"token_user"`
+}
+
+type Step struct {
+	ID          string    `json:"id"`
+	Title       string    `json:"title"`
+	Description string    `json:"description"`
+	Slug        string    `json:"slug"`
+	CreatedAt   string    `json:"created_at"`
+	UpdatedAt   string    `json:"updated_at"`
+	Lessons     []*Lesson `json:"lessons"`
+	Course      *Course   `json:"Course"`
+	CourseID    string    `json:"courseId"`
 }
 
 type User struct {
