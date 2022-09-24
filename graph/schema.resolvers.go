@@ -6,8 +6,6 @@ package graph
 import (
 	"context"
 	"fmt"
-	"github.com/laurentino14/user/services/lesson"
-
 	"github.com/laurentino14/user/graph/generated"
 	"github.com/laurentino14/user/graph/model"
 	"github.com/laurentino14/user/services/course"
@@ -47,7 +45,7 @@ func (r *mutationResolver) CreateStep(ctx context.Context, input model.NewStep) 
 
 // CreateLesson is the resolver for the createLesson field.
 func (r *mutationResolver) CreateLesson(ctx context.Context, input model.NewLesson) (*model.Lesson, error) {
-	lessonData, err := lesson.CreateLesson(input, ctx, r.Connect)
+	lessonData, err := r.LessonService.Create(input, ctx)
 	if lessonData == nil {
 		return nil, err
 	}
@@ -92,8 +90,8 @@ func (r *queryResolver) Steps(ctx context.Context) ([]*model.Step, error) {
 
 // Lessons is the resolver for the lessons field.
 func (r *queryResolver) Lessons(ctx context.Context) ([]*model.Lesson, error) {
-	lessonsData := lesson.GetAllLessons(ctx)
-	if lessonsData == nil {
+	lessonsData, err := r.LessonService.GetAll(ctx)
+	if err != nil {
 		return nil, fmt.Errorf("Erro de conexão com o banco de dados")
 	}
 
@@ -111,7 +109,9 @@ func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResol
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
-type mutationResolver struct{ *Resolver }
+type mutationResolver struct {
+	*Resolver
+}
 type queryResolver struct {
 	*Resolver
 }

@@ -2,7 +2,7 @@ package graph
 
 import (
 	"github.com/laurentino14/user/prisma/connect"
-	services2 "github.com/laurentino14/user/repositories"
+	"github.com/laurentino14/user/services"
 )
 
 // This file will not be regenerated automatically.
@@ -12,5 +12,5 @@ import (
 type Resolver struct {
 	Connect *connect.DB
 
-	Lesson *services2.ILessonRepository
+	LessonService services.ILessonService
 }

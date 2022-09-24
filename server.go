@@ -8,6 +8,8 @@ import (
 	"github.com/laurentino14/user/graph"
 	"github.com/laurentino14/user/graph/generated"
 	"github.com/laurentino14/user/prisma/connect"
+	"github.com/laurentino14/user/repositories"
+	"github.com/laurentino14/user/services"
 	"log"
 	"net/http"
 	"os"
@@ -22,7 +24,9 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{connect}}))
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
+		LessonService: services.NewLessonService(repositories.NewLessonRepository(connect)),
+	}}))
 
 	http.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
 	http.Handle("/graphql", srv)
