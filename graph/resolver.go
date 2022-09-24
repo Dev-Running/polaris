@@ -12,5 +12,9 @@ import (
 type Resolver struct {
 	Connect *connect.DB
 
-	LessonService services.ILessonService
+	UserService       services.IUserService
+	EnrollmentService services.IEnrollmentService
+	CourseService     services.ICourseService
+	StepService       services.IStepService
+	LessonService     services.ILessonService
 }

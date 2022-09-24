@@ -58,10 +58,6 @@ type Enrollment {
 }
 
 input NewEnrollment {
-  id: String!
-  created_at: Date
-  updated_at: Date
-  deleted_at: Date
   userId: String!
   courseId: String!
 }

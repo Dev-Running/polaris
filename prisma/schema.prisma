@@ -13,6 +13,7 @@ datasource db {
   url      = "postgresql://postgres:dev@localhost:5432/devrunning?schema=public"
 }
 
+
 model User {
   id         String       @id @default(uuid())
   firstname  String

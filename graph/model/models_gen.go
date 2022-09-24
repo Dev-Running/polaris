@@ -43,12 +43,8 @@ type NewCourse struct {
 }
 
 type NewEnrollment struct {
-	ID        string  `json:"id"`
-	CreatedAt *string `json:"created_at"`
-	UpdatedAt *string `json:"updated_at"`
-	DeletedAt *string `json:"deleted_at"`
-	UserID    string  `json:"userId"`
-	CourseID  string  `json:"courseId"`
+	UserID   string `json:"userId"`
+	CourseID string `json:"courseId"`
 }
 
 type NewLesson struct {

@@ -24,8 +24,8 @@ func NewLessonRepository(db *connect.DB) *LessonRepository {
 }
 
 // Create implements LessonRepository
-func (c *LessonRepository) Create(input model.NewLesson, ctx context.Context) (*model.Lesson, error) {
-	exec, err := c.DB.Client.Lesson.CreateOne(
+func (r *LessonRepository) Create(input model.NewLesson, ctx context.Context) (*model.Lesson, error) {
+	exec, err := r.DB.Client.Lesson.CreateOne(
 		prisma.Lesson.Title.Set(input.Title),
 		prisma.Lesson.Slug.Set(input.Slug),
 		prisma.Lesson.Link.Set(input.Link),
@@ -51,8 +51,8 @@ func (c *LessonRepository) Create(input model.NewLesson, ctx context.Context) (*
 }
 
 // GetAll implements LessonRepository
-func (c *LessonRepository) GetAll(ctx context.Context) ([]*model.Lesson, error) {
-	exec, err := c.DB.Client.Lesson.FindMany().Take(10).Exec(ctx)
+func (r *LessonRepository) GetAll(ctx context.Context) ([]*model.Lesson, error) {
+	exec, err := r.DB.Client.Lesson.FindMany().Take(10).Exec(ctx)
 
 	if err != nil {
 		return nil, err

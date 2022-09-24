@@ -25,11 +25,15 @@ func main() {
 		port = defaultPort
 	}
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
-		LessonService: services.NewLessonService(repositories.NewLessonRepository(connect)),
+		LessonService:     services.NewLessonService(repositories.NewLessonRepository(connect)),
+		CourseService:     services.NewCourseService(repositories.NewCourseRepository(connect)),
+		StepService:       services.NewStepService(repositories.NewStepRepository(connect)),
+		UserService:       services.NewUserService(repositories.NewUserRepository(connect)),
+		EnrollmentService: services.NewEnrollmentService(repositories.NewEnrollmentRepository(connect)),
 	}}))
 
-	http.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
-	http.Handle("/graphql", srv)
+	go http.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
+	go http.Handle("/graphql", srv)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 

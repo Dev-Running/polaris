@@ -645,10 +645,6 @@ type Enrollment {
 }
 
 input NewEnrollment {
-  id: String!
-  created_at: Date
-  updated_at: Date
-  deleted_at: Date
   userId: String!
   courseId: String!
 }
@@ -5260,45 +5256,13 @@ func (ec *executionContext) unmarshalInputNewEnrollment(ctx context.Context, obj
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "created_at", "updated_at", "deleted_at", "userId", "courseId"}
+	fieldsInOrder := [...]string{"userId", "courseId"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
 			continue
 		}
 		switch k {
-		case "id":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
-			it.ID, err = ec.unmarshalNString2string(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "created_at":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("created_at"))
-			it.CreatedAt, err = ec.unmarshalODate2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "updated_at":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("updated_at"))
-			it.UpdatedAt, err = ec.unmarshalODate2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
-		case "deleted_at":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("deleted_at"))
-			it.DeletedAt, err = ec.unmarshalODate2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		case "userId":
 			var err error
 
