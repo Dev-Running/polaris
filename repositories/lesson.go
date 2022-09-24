@@ -16,12 +16,14 @@ type LessonRepository struct {
 	DB *connect.DB
 }
 
+// NewLessonRepository implements LessonRepository
 func NewLessonRepository(db *connect.DB) *LessonRepository {
 	return &LessonRepository{
 		DB: db,
 	}
 }
 
+// Create implements LessonRepository
 func (c *LessonRepository) Create(input model.NewLesson, ctx context.Context) (*model.Lesson, error) {
 	exec, err := c.DB.Client.Lesson.CreateOne(
 		prisma.Lesson.Title.Set(input.Title),
@@ -48,6 +50,7 @@ func (c *LessonRepository) Create(input model.NewLesson, ctx context.Context) (*
 	return lessonData, nil
 }
 
+// GetAll implements LessonRepository
 func (c *LessonRepository) GetAll(ctx context.Context) ([]*model.Lesson, error) {
 	exec, err := c.DB.Client.Lesson.FindMany().Take(10).Exec(ctx)
 
