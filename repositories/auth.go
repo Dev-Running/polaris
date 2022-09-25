@@ -50,15 +50,14 @@ func (r *AuthRepository) Auth(input *model.AuthenticationInput, ctx context.Cont
 
 		refreshToken, err := r.GenerateToken(exec.ID)
 		if err != nil {
-			return nil, fmt.Errorf("erro na validacao do token")
+			return nil, fmt.Errorf("erro na geracao do token")
 		}
 
 		_, err = r.DB.Client.User.FindMany(prisma.User.ID.Equals(exec.ID)).Update(
 			prisma.User.TokenUser.Set(refreshToken),
 		).Exec(ctx)
 		if err != nil {
-			fmt.Errorf("erro na validacao do token")
-			return nil, err
+			return nil, fmt.Errorf("erro na validacao do token")
 		}
 
 		user := &model.User{
@@ -76,7 +75,7 @@ func (r *AuthRepository) Auth(input *model.AuthenticationInput, ctx context.Cont
 
 	}
 
-	if input.Password != nil && input.Password != nil && input.Token == nil {
+	if input.Password != nil && input.Email != nil && input.Token == nil {
 		exec, err := r.DB.Client.User.FindUnique(prisma.User.Email.Equals(*input.Email)).Exec(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("erro de conexão com o banco de dados")
@@ -115,10 +114,10 @@ func (r *AuthRepository) GenerateToken(id string) (string, error) {
 		Subject:  "",
 		Audience: nil,
 		ExpiresAt: &jwt.NumericDate{
-			time.Now().Add(time.Hour * 4),
+			Time: time.Now().Add(time.Hour * 48),
 		},
-		NotBefore: &jwt.NumericDate{time.Time{}},
-		IssuedAt:  &jwt.NumericDate{time.Time{}},
+		NotBefore: &jwt.NumericDate{},
+		IssuedAt:  &jwt.NumericDate{},
 		ID:        id,
 	}
 
@@ -127,7 +126,7 @@ func (r *AuthRepository) GenerateToken(id string) (string, error) {
 	if err != nil {
 		fmt.Println(tokenString)
 		fmt.Println(err)
-		return tokenString, fmt.Errorf("Error in generating key")
+		return tokenString, fmt.Errorf("error in generating key")
 	}
 
 	return tokenString, nil
@@ -137,7 +136,7 @@ func (r *AuthRepository) IsValid(t string) bool {
 
 	_, err := jwt.Parse(t, func(t *jwt.Token) (interface{}, error) {
 		if _, isValid := t.Method.(*jwt.SigningMethodHMAC); !isValid {
-			return nil, fmt.Errorf("Token Invalid")
+			return nil, fmt.Errorf("token Invalid")
 		}
 		return []byte(r.Secret), nil
 	})
