@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/laurentino14/user/graph"
@@ -20,6 +21,8 @@ const defaultPort = "3131"
 
 func main() {
 	connect := connect.NewPrismaConnect()
+	a := os.Getenv("SECRET")
+	fmt.Println(a)
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
@@ -30,6 +33,7 @@ func main() {
 		StepService:       services.NewStepService(repositories.NewStepRepository(connect)),
 		UserService:       services.NewUserService(repositories.NewUserRepository(connect)),
 		EnrollmentService: services.NewEnrollmentService(repositories.NewEnrollmentRepository(connect)),
+		AuthService:       services.NewAuthService(repositories.NewAuthRepository(connect)),
 	}}))
 
 	go http.Handle("/", playground.Handler("GraphQL playground", "/graphql"))

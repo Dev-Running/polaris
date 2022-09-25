@@ -55,7 +55,6 @@ func (r *UserRepository) GetAll(ctx context.Context) ([]*model.User, error) {
 
 	for _, list := range exec {
 
-		token := "*******"
 		user := &model.User{
 			ID:         list.ID,
 			Firstname:  list.Firstname,
@@ -63,7 +62,7 @@ func (r *UserRepository) GetAll(ctx context.Context) ([]*model.User, error) {
 			Email:      list.Email,
 			Password:   list.Password,
 			Cellphone:  list.Cellphone,
-			TokenUser:  &token,
+			TokenUser:  &list.TokenUser,
 			Enrollment: nil,
 		}
 		allUsers = append(allUsers, user)

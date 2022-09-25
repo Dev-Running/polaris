@@ -2,6 +2,12 @@
 
 package model
 
+type AuthenticationInput struct {
+	Token    *string `json:"token"`
+	Email    *string `json:"email"`
+	Password *string `json:"password"`
+}
+
 type Course struct {
 	ID          string        `json:"id"`
 	Title       string        `json:"title"`

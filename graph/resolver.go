@@ -12,6 +12,8 @@ import (
 type Resolver struct {
 	Connect *connect.DB
 
+	AuthService services.IAuthService
+
 	UserService       services.IUserService
 	EnrollmentService services.IEnrollmentService
 	CourseService     services.ICourseService

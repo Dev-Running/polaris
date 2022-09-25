@@ -11,6 +11,15 @@ import (
 	"github.com/laurentino14/user/graph/model"
 )
 
+// Authentication is the resolver for the authentication field.
+func (r *mutationResolver) Authentication(ctx context.Context, input *model.AuthenticationInput) (*model.User, error) {
+	authData, err := r.AuthService.Auth(input, ctx)
+	if err != nil {
+		return nil, err
+	}
+	return authData, nil
+}
+
 // CreateUser is the resolver for the createUser field.
 func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
 	userData, err := r.UserService.Create(input, ctx)

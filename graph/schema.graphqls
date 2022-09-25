@@ -102,6 +102,12 @@ input NewLesson {
   stepId: String!
 }
 
+input AuthenticationInput{
+  token: String
+  email: String
+  password: String
+}
+
 type Query {
   users: [User]
   courses: [Course]
@@ -113,7 +119,9 @@ type Query {
 }
 
 
+
 type Mutation {
+  authentication(input:AuthenticationInput): User!
   createUser(input: NewUser!): User!
   createCourse(input: NewCourse!): Course!
   createStep(input: NewStep!): Step!
