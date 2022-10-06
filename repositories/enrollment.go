@@ -31,6 +31,8 @@ func (r *EnrollmentRepository) Create(input model.NewEnrollment, ctx context.Con
 		return nil, err
 	}
 
+	r.DB.Client.User.UpsertOne(prisma.User.ID.Equals(exec.UserID)).Update(prisma.User.Enrollment.Link(prisma.Enrollment.ID.Equals(exec.ID)))
+
 	enrollmentData := &model.Enrollment{
 		ID:        exec.ID,
 		CreatedAt: exec.CreatedAt.String(),

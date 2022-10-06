@@ -90,6 +90,7 @@ func (r *AuthRepository) Auth(input *model.AuthenticationInput, ctx context.Cont
 		if err != nil {
 			return nil, fmt.Errorf("erro na validacao do token")
 		}
+
 		user := &model.User{
 			ID:         exec.ID,
 			Firstname:  exec.Firstname,

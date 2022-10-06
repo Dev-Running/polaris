@@ -13,6 +13,7 @@ type Course struct {
 	Title       string        `json:"title"`
 	Slug        string        `json:"slug"`
 	Description *string       `json:"description"`
+	Image       *string       `json:"image"`
 	CreatedAt   string        `json:"created_at"`
 	UpdatedAt   string        `json:"updated_at"`
 	Lessons     []*Lesson     `json:"Lessons"`
@@ -43,6 +44,7 @@ type NewCourse struct {
 	ID          *string `json:"id"`
 	Title       string  `json:"title"`
 	Slug        string  `json:"slug"`
+	Image       *string `json:"image"`
 	Description *string `json:"description"`
 	CreatedAt   *string `json:"created_at"`
 	UpdatedAt   *string `json:"updated_at"`
@@ -76,7 +78,6 @@ type NewUser struct {
 	Email     string  `json:"email"`
 	Password  string  `json:"password"`
 	Cellphone string  `json:"cellphone"`
-	TokenUser *string `json:"token_user"`
 }
 
 type Step struct {

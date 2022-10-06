@@ -48,6 +48,7 @@ type ComplexityRoot struct {
 		Description func(childComplexity int) int
 		Enrollments func(childComplexity int) int
 		ID          func(childComplexity int) int
+		Image       func(childComplexity int) int
 		Lessons     func(childComplexity int) int
 		Slug        func(childComplexity int) int
 		Steps       func(childComplexity int) int
@@ -173,6 +174,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Course.ID(childComplexity), true
+
+	case "Course.image":
+		if e.complexity.Course.Image == nil {
+			break
+		}
+
+		return e.complexity.Course.Image(childComplexity), true
 
 	case "Course.Lessons":
 		if e.complexity.Course.Lessons == nil {
@@ -605,6 +613,7 @@ var sources = []*ast.Source{
 # https://gqlgen.com/getting-started/
 
 scalar Date
+scalar Any
 
 type User {
   id: String!
@@ -624,7 +633,6 @@ input NewUser{
   email: String!
   password: String!
   cellphone: String!
-  token_user: String
 }
 
 type Course {
@@ -632,6 +640,7 @@ type Course {
   title: String!
   slug: String!
   description: String
+  image: String
   created_at: Date!
   updated_at: Date!
   Lessons:     [Lesson]
@@ -644,6 +653,7 @@ input NewCourse {
   id: String
   title: String!
   slug: String!
+  image:String
   description: String
   created_at: Date
   updated_at: Date
@@ -1042,6 +1052,47 @@ func (ec *executionContext) _Course_description(ctx context.Context, field graph
 }
 
 func (ec *executionContext) fieldContext_Course_description(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Course",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Course_image(ctx context.Context, field graphql.CollectedField, obj *model.Course) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Course_image(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Image, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Course_image(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Course",
 		Field:      field,
@@ -2065,6 +2116,8 @@ func (ec *executionContext) fieldContext_Mutation_createCourse(ctx context.Conte
 				return ec.fieldContext_Course_slug(ctx, field)
 			case "description":
 				return ec.fieldContext_Course_description(ctx, field)
+			case "image":
+				return ec.fieldContext_Course_image(ctx, field)
 			case "created_at":
 				return ec.fieldContext_Course_created_at(ctx, field)
 			case "updated_at":
@@ -2411,6 +2464,8 @@ func (ec *executionContext) fieldContext_Query_courses(ctx context.Context, fiel
 				return ec.fieldContext_Course_slug(ctx, field)
 			case "description":
 				return ec.fieldContext_Course_description(ctx, field)
+			case "image":
+				return ec.fieldContext_Course_image(ctx, field)
 			case "created_at":
 				return ec.fieldContext_Course_created_at(ctx, field)
 			case "updated_at":
@@ -3098,6 +3153,8 @@ func (ec *executionContext) fieldContext_Step_Course(ctx context.Context, field 
 				return ec.fieldContext_Course_slug(ctx, field)
 			case "description":
 				return ec.fieldContext_Course_description(ctx, field)
+			case "image":
+				return ec.fieldContext_Course_image(ctx, field)
 			case "created_at":
 				return ec.fieldContext_Course_created_at(ctx, field)
 			case "updated_at":
@@ -5343,7 +5400,7 @@ func (ec *executionContext) unmarshalInputNewCourse(ctx context.Context, obj int
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "title", "slug", "description", "created_at", "updated_at"}
+	fieldsInOrder := [...]string{"id", "title", "slug", "image", "description", "created_at", "updated_at"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -5371,6 +5428,14 @@ func (ec *executionContext) unmarshalInputNewCourse(ctx context.Context, obj int
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("slug"))
 			it.Slug, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "image":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("image"))
+			it.Image, err = ec.unmarshalOString2ᚖstring(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -5567,7 +5632,7 @@ func (ec *executionContext) unmarshalInputNewUser(ctx context.Context, obj inter
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"id", "firstname", "lastname", "email", "password", "cellphone", "token_user"}
+	fieldsInOrder := [...]string{"id", "firstname", "lastname", "email", "password", "cellphone"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -5622,14 +5687,6 @@ func (ec *executionContext) unmarshalInputNewUser(ctx context.Context, obj inter
 			if err != nil {
 				return it, err
 			}
-		case "token_user":
-			var err error
-
-			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("token_user"))
-			it.TokenUser, err = ec.unmarshalOString2ᚖstring(ctx, v)
-			if err != nil {
-				return it, err
-			}
 		}
 	}
 
@@ -5678,6 +5735,10 @@ func (ec *executionContext) _Course(ctx context.Context, sel ast.SelectionSet, o
 		case "description":
 
 			out.Values[i] = ec._Course_description(ctx, field, obj)
+
+		case "image":
+
+			out.Values[i] = ec._Course_image(ctx, field, obj)
 
 		case "created_at":
 

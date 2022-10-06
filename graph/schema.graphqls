@@ -3,6 +3,7 @@
 # https://gqlgen.com/getting-started/
 
 scalar Date
+scalar Any
 
 type User {
   id: String!
@@ -22,7 +23,6 @@ input NewUser{
   email: String!
   password: String!
   cellphone: String!
-  token_user: String
 }
 
 type Course {
@@ -30,6 +30,7 @@ type Course {
   title: String!
   slug: String!
   description: String
+  image: String
   created_at: Date!
   updated_at: Date!
   Lessons:     [Lesson]
@@ -42,6 +43,7 @@ input NewCourse {
   id: String
   title: String!
   slug: String!
+  image:String
   description: String
   created_at: Date
   updated_at: Date

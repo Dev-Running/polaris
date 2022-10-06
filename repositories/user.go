@@ -26,20 +26,21 @@ func (r *UserRepository) Create(input model.NewUser, ctx context.Context) (*mode
 		prisma.User.Email.Set(input.Email),
 		prisma.User.Password.Set(input.Password),
 		prisma.User.Cellphone.Set(input.Cellphone),
-		prisma.User.TokenUser.Set(*input.TokenUser),
+		prisma.User.TokenUser.Set(""),
 	).Exec(ctx)
 	if err != nil {
 		return nil, err
 	}
-
+	a := ""
 	userData := &model.User{
-		ID:        exec.ID,
-		Firstname: input.Firstname,
-		Lastname:  input.Lastname,
-		Email:     input.Email,
-		Password:  input.Password,
-		Cellphone: input.Cellphone,
-		TokenUser: input.TokenUser,
+		ID:         exec.ID,
+		Firstname:  input.Firstname,
+		Lastname:   input.Lastname,
+		Email:      input.Email,
+		Password:   input.Password,
+		Cellphone:  input.Cellphone,
+		TokenUser:  &a,
+		Enrollment: nil,
 	}
 	return userData, nil
 }
@@ -52,9 +53,7 @@ func (r *UserRepository) GetAll(ctx context.Context) ([]*model.User, error) {
 	}
 
 	allUsers := []*model.User{}
-
 	for _, list := range exec {
-
 		user := &model.User{
 			ID:         list.ID,
 			Firstname:  list.Firstname,

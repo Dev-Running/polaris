@@ -26,6 +26,7 @@ func (r *CourseRepository) Create(input model.NewCourse, ctx context.Context) (*
 		prisma.Course.Title.Set(input.Title),
 		prisma.Course.Slug.Set(input.Slug),
 		prisma.Course.Description.Set(*input.Description),
+		prisma.Course.Image.Set(*input.Image),
 		prisma.Course.CreatedAt.Set(time.Now()),
 		prisma.Course.UpdatedAt.Set(time.Now()),
 	).Exec(ctx)

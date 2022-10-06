@@ -6,11 +6,13 @@ import (
 	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/go-chi/chi"
 	"github.com/laurentino14/user/graph"
 	"github.com/laurentino14/user/graph/generated"
 	"github.com/laurentino14/user/prisma/connect"
 	"github.com/laurentino14/user/repositories"
 	"github.com/laurentino14/user/services"
+	"github.com/rs/cors"
 	"log"
 	"net/http"
 	"os"
@@ -27,6 +29,11 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
+	router := chi.NewRouter()
+
+	// Add CORS middleware around every request
+	// See https://github.com/rs/cors for full option listing
+
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
 		LessonService:     services.NewLessonService(repositories.NewLessonRepository(connect)),
 		CourseService:     services.NewCourseService(repositories.NewCourseRepository(connect)),
@@ -36,8 +43,8 @@ func main() {
 		AuthService:       services.NewAuthService(repositories.NewAuthRepository(connect)),
 	}}))
 
-	go http.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
-	go http.Handle("/graphql", srv)
+	router.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
+	router.Handle("/graphql", srv)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 
@@ -48,7 +55,6 @@ func main() {
 	httpServer := http.Server{
 		Addr: *listenAddress,
 	}
-
 	idleConnectionsClosed := make(chan struct{})
 
 	go func() {
@@ -61,7 +67,7 @@ func main() {
 		close(idleConnectionsClosed)
 	}()
 
-	if err := httpServer.ListenAndServe(); err != http.ErrServerClosed {
+	if err := http.ListenAndServe(":3131", cors.Default().Handler(router)); err != http.ErrServerClosed {
 		log.Fatalf("HTTP server ListenAndServe Error: %v", err)
 	}
 
