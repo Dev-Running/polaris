@@ -30,6 +30,10 @@ type Enrollment struct {
 	CourseID  string  `json:"courseId"`
 }
 
+type GetUserAuthInput struct {
+	Token *string `json:"token"`
+}
+
 type Lesson struct {
 	ID        *string `json:"id"`
 	Title     string  `json:"title"`
@@ -101,4 +105,13 @@ type User struct {
 	Cellphone  string        `json:"cellphone"`
 	TokenUser  *string       `json:"token_user"`
 	Enrollment []*Enrollment `json:"Enrollment"`
+}
+
+type UserAuthenticated struct {
+	ID        *string `json:"id"`
+	Firstname *string `json:"firstname"`
+	Lastname  *string `json:"lastname"`
+	Email     *string `json:"email"`
+	Cellphone *string `json:"cellphone"`
+	TokenUser *string `json:"token_user"`
 }

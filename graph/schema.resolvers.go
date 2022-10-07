@@ -120,6 +120,15 @@ func (r *queryResolver) Enrollments(ctx context.Context) ([]*model.Enrollment, e
 	return enrollmentsData, nil
 }
 
+// UserAuthenticated is the resolver for the userAuthenticated field.
+func (r *queryResolver) UserAuthenticated(ctx context.Context, input *model.GetUserAuthInput) (*model.UserAuthenticated, error) {
+	userAuthenticated, err := r.AuthService.GetUserAuthenticated(input, ctx)
+	if err != nil {
+		return nil, err
+	}
+	return userAuthenticated, nil
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 

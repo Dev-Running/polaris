@@ -15,6 +15,7 @@ type IAuthRepository interface {
 	Auth(input *model.AuthenticationInput, ctx context.Context) (*model.User, error)
 	GenerateToken(id string) (string, error)
 	IsValid(t string) bool
+	GetUserAuthenticated(input *model.GetUserAuthInput, ctx context.Context) (*model.UserAuthenticated, error)
 }
 
 type AuthRepository struct {
@@ -142,4 +143,31 @@ func (r *AuthRepository) IsValid(t string) bool {
 		return []byte(r.Secret), nil
 	})
 	return err == nil
+}
+
+type UserAuthenticated struct {
+	Id        string
+	Firstname string
+	Lastname  string
+	Email     string
+	Cellphone string
+	TokenUser string
+}
+
+func (r *AuthRepository) GetUserAuthenticated(input *model.GetUserAuthInput, ctx context.Context) (*model.UserAuthenticated, error) {
+	user, err := r.DB.Client.User.FindFirst(prisma.User.TokenUser.Equals(*input.Token)).Exec(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	userData := &model.UserAuthenticated{
+		ID:        &user.ID,
+		Firstname: &user.Firstname,
+		Lastname:  &user.Lastname,
+		Email:     &user.Email,
+		Cellphone: &user.Cellphone,
+		TokenUser: &user.TokenUser,
+	}
+	return userData, nil
 }

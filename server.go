@@ -43,8 +43,8 @@ func main() {
 		AuthService:       services.NewAuthService(repositories.NewAuthRepository(connect)),
 	}}))
 
-	router.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
-	router.Handle("/graphql", srv)
+	go router.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
+	go router.Handle("/graphql", srv)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 

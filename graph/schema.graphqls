@@ -97,6 +97,15 @@ type Lesson {
   stepId: String!
 }
 
+type UserAuthenticated {
+  id: String
+  firstname: String
+  lastname: String
+  email: String
+  cellphone: String
+  token_user: String
+}
+
 input NewLesson {
   title: String!
   slug: String!
@@ -109,6 +118,9 @@ input AuthenticationInput{
   email: String
   password: String
 }
+input GetUserAuthInput{
+  token: String
+}
 
 type Query {
   users: [User]
@@ -116,13 +128,14 @@ type Query {
   steps: [Step]
   lessons: [Lesson]
   enrollments: [Enrollment]
-
+  userAuthenticated(input: GetUserAuthInput): UserAuthenticated!
 
 }
 
 
 
 type Mutation {
+
   authentication(input:AuthenticationInput): User!
   createUser(input: NewUser!): User!
   createCourse(input: NewCourse!): Course!
