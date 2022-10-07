@@ -67,7 +67,7 @@ func main() {
 		close(idleConnectionsClosed)
 	}()
 
-	if err := http.ListenAndServe(":3131", cors.Default().Handler(router)); err != http.ErrServerClosed {
+	if err := http.ListenAndServe(":3131", cors.AllowAll().Handler(router)); err != http.ErrServerClosed {
 		log.Fatalf("HTTP server ListenAndServe Error: %v", err)
 	}
 
