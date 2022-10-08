@@ -21,11 +21,11 @@ func NewUserRepository(db *connect.DB) *UserRepository {
 }
 func (r *UserRepository) Create(input model.NewUser, ctx context.Context) (*model.User, error) {
 	exec, err := r.DB.Client.User.CreateOne(
-		prisma.User.Firstname.Set(input.Firstname),
-		prisma.User.Lastname.Set(input.Lastname),
-		prisma.User.Email.Set(input.Email),
-		prisma.User.Password.Set(input.Password),
-		prisma.User.Cellphone.Set(input.Cellphone),
+		prisma.User.Firstname.Set(*input.Firstname),
+		prisma.User.Lastname.Set(*input.Lastname),
+		prisma.User.Email.Set(*input.Email),
+		prisma.User.Password.Set(*input.Password),
+		prisma.User.Cellphone.Set(*input.Cellphone),
 		prisma.User.TokenUser.Set(""),
 	).Exec(ctx)
 	if err != nil {
@@ -34,19 +34,19 @@ func (r *UserRepository) Create(input model.NewUser, ctx context.Context) (*mode
 	a := ""
 	userData := &model.User{
 		ID:         exec.ID,
-		Firstname:  input.Firstname,
-		Lastname:   input.Lastname,
-		Email:      input.Email,
-		Password:   input.Password,
-		Cellphone:  input.Cellphone,
-		TokenUser:  &a,
+		Firstname:  exec.Firstname,
+		Lastname:   exec.Lastname,
+		Email:      exec.Email,
+		Password:   exec.Password,
+		Cellphone:  exec.Cellphone,
+		TokenUser:  a,
 		Enrollment: nil,
 	}
 	return userData, nil
 }
 
 func (r *UserRepository) GetAll(ctx context.Context) ([]*model.User, error) {
-	exec, err := r.DB.Client.User.FindMany().Take(10).Exec(ctx)
+	exec, err := r.DB.Client.User.FindMany().Exec(ctx)
 
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (r *UserRepository) GetAll(ctx context.Context) ([]*model.User, error) {
 			Email:      list.Email,
 			Password:   list.Password,
 			Cellphone:  list.Cellphone,
-			TokenUser:  &list.TokenUser,
+			TokenUser:  list.TokenUser,
 			Enrollment: nil,
 		}
 		allUsers = append(allUsers, user)

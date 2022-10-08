@@ -12,25 +12,24 @@ type User {
   email: String!
   password: String!
   cellphone: String!
-  token_user: String
-  Enrollment: [Enrollment]
+  token_user: String!
+  Enrollment: [Enrollment]!
 }
 
 input NewUser{
-  id: String
-  firstname: String!
-  lastname: String!
-  email: String!
-  password: String!
-  cellphone: String!
+  firstname: String
+  lastname: String
+  email: String
+  password: String
+  cellphone: String
 }
 
 type Course {
   id: String!
   title: String!
   slug: String!
-  description: String
-  image: String
+  description: String!
+  image: String!
   created_at: Date!
   updated_at: Date!
   Lessons:     [Lesson]
@@ -40,9 +39,8 @@ type Course {
 }
 
 input NewCourse {
-  id: String
-  title: String!
-  slug: String!
+  title: String
+  slug: String
   image:String
   description: String
   created_at: Date
@@ -52,8 +50,8 @@ input NewCourse {
 type Enrollment {
   id: String!
   created_at: Date!
-  updated_at: Date
-  deleted_at: Date
+  updated_at: Date!
+  deleted_at: Date!
   userId:String!
   courseId:String!
 
@@ -123,11 +121,11 @@ input GetUserAuthInput{
 }
 
 type Query {
-  users: [User]
-  courses: [Course]
+  users: [User!]!
+  courses: [Course!]!
   steps: [Step]
   lessons: [Lesson]
-  enrollments: [Enrollment]
+  enrollments: [Enrollment!]!
   userAuthenticated(input: GetUserAuthInput): UserAuthenticated!
 
 }
@@ -137,7 +135,7 @@ type Query {
 type Mutation {
 
   authentication(input:AuthenticationInput): User!
-  createUser(input: NewUser!): User!
+  createUser(input: NewUser): User!
   createCourse(input: NewCourse!): Course!
   createStep(input: NewStep!): Step!
   createLesson(input: NewLesson!): Lesson!

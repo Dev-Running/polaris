@@ -68,7 +68,7 @@ func (r *AuthRepository) Auth(input *model.AuthenticationInput, ctx context.Cont
 			Email:      exec.Email,
 			Password:   exec.Password,
 			Cellphone:  exec.Cellphone,
-			TokenUser:  &refreshToken,
+			TokenUser:  refreshToken,
 			Enrollment: nil,
 		}
 
@@ -99,7 +99,7 @@ func (r *AuthRepository) Auth(input *model.AuthenticationInput, ctx context.Cont
 			Email:      exec.Email,
 			Password:   exec.Password,
 			Cellphone:  exec.Cellphone,
-			TokenUser:  &refreshToken,
+			TokenUser:  refreshToken,
 			Enrollment: nil,
 		}
 

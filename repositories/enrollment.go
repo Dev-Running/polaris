@@ -33,11 +33,15 @@ func (r *EnrollmentRepository) Create(input model.NewEnrollment, ctx context.Con
 
 	r.DB.Client.User.UpsertOne(prisma.User.ID.Equals(exec.UserID)).Update(prisma.User.Enrollment.Link(prisma.Enrollment.ID.Equals(exec.ID)))
 
+	up, _ := exec.UpdatedAt()
+	upd := up.String()
+	de, _ := exec.DeletedAt()
+	del := de.String()
 	enrollmentData := &model.Enrollment{
 		ID:        exec.ID,
 		CreatedAt: exec.CreatedAt.String(),
-		UpdatedAt: nil,
-		DeletedAt: nil,
+		UpdatedAt: upd,
+		DeletedAt: del,
 		UserID:    exec.UserID,
 		CourseID:  exec.CourseID,
 	}
@@ -66,8 +70,8 @@ func (r *EnrollmentRepository) GetAll(ctx context.Context) ([]*model.Enrollment,
 		user := &model.Enrollment{
 			ID:        list.ID,
 			CreatedAt: list.CreatedAt.String(),
-			UpdatedAt: &updatedAt,
-			DeletedAt: &deletedAt,
+			UpdatedAt: updatedAt,
+			DeletedAt: deletedAt,
 			UserID:    list.UserID,
 			CourseID:  list.CourseID,
 		}

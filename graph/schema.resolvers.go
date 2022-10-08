@@ -21,8 +21,8 @@ func (r *mutationResolver) Authentication(ctx context.Context, input *model.Auth
 }
 
 // CreateUser is the resolver for the createUser field.
-func (r *mutationResolver) CreateUser(ctx context.Context, input model.NewUser) (*model.User, error) {
-	userData, err := r.UserService.Create(input, ctx)
+func (r *mutationResolver) CreateUser(ctx context.Context, input *model.NewUser) (*model.User, error) {
+	userData, err := r.UserService.Create(*input, ctx)
 	if err != nil {
 		return nil, fmt.Errorf("Já existe um usuário utilizando esse e-mail ou telefone")
 	}

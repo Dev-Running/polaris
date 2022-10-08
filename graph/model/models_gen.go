@@ -12,8 +12,8 @@ type Course struct {
 	ID          string        `json:"id"`
 	Title       string        `json:"title"`
 	Slug        string        `json:"slug"`
-	Description *string       `json:"description"`
-	Image       *string       `json:"image"`
+	Description string        `json:"description"`
+	Image       string        `json:"image"`
 	CreatedAt   string        `json:"created_at"`
 	UpdatedAt   string        `json:"updated_at"`
 	Lessons     []*Lesson     `json:"Lessons"`
@@ -22,12 +22,12 @@ type Course struct {
 }
 
 type Enrollment struct {
-	ID        string  `json:"id"`
-	CreatedAt string  `json:"created_at"`
-	UpdatedAt *string `json:"updated_at"`
-	DeletedAt *string `json:"deleted_at"`
-	UserID    string  `json:"userId"`
-	CourseID  string  `json:"courseId"`
+	ID        string `json:"id"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+	DeletedAt string `json:"deleted_at"`
+	UserID    string `json:"userId"`
+	CourseID  string `json:"courseId"`
 }
 
 type GetUserAuthInput struct {
@@ -45,9 +45,8 @@ type Lesson struct {
 }
 
 type NewCourse struct {
-	ID          *string `json:"id"`
-	Title       string  `json:"title"`
-	Slug        string  `json:"slug"`
+	Title       *string `json:"title"`
+	Slug        *string `json:"slug"`
 	Image       *string `json:"image"`
 	Description *string `json:"description"`
 	CreatedAt   *string `json:"created_at"`
@@ -76,12 +75,11 @@ type NewStep struct {
 }
 
 type NewUser struct {
-	ID        *string `json:"id"`
-	Firstname string  `json:"firstname"`
-	Lastname  string  `json:"lastname"`
-	Email     string  `json:"email"`
-	Password  string  `json:"password"`
-	Cellphone string  `json:"cellphone"`
+	Firstname *string `json:"firstname"`
+	Lastname  *string `json:"lastname"`
+	Email     *string `json:"email"`
+	Password  *string `json:"password"`
+	Cellphone *string `json:"cellphone"`
 }
 
 type Step struct {
@@ -103,7 +101,7 @@ type User struct {
 	Email      string        `json:"email"`
 	Password   string        `json:"password"`
 	Cellphone  string        `json:"cellphone"`
-	TokenUser  *string       `json:"token_user"`
+	TokenUser  string        `json:"token_user"`
 	Enrollment []*Enrollment `json:"Enrollment"`
 }
 

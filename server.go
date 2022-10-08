@@ -3,7 +3,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/go-chi/chi"
@@ -23,8 +22,7 @@ const defaultPort = "3131"
 
 func main() {
 	connect := connect.NewPrismaConnect()
-	a := os.Getenv("SECRET")
-	fmt.Println(a)
+
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = defaultPort
@@ -43,8 +41,8 @@ func main() {
 		AuthService:       services.NewAuthService(repositories.NewAuthRepository(connect)),
 	}}))
 
-	go router.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
-	go router.Handle("/graphql", srv)
+	router.Handle("/", playground.Handler("GraphQL playground", "/graphql"))
+	router.Handle("/graphql", srv)
 
 	log.Printf("connect to http://localhost:%s/ for GraphQL playground", port)
 
@@ -62,7 +60,7 @@ func main() {
 		signal.Notify(sigint, os.Interrupt)
 		<-sigint
 		if err := httpServer.Shutdown(context.Background()); err != nil {
-			log.Printf("HTTP Server Shutdown Error: %v", err)
+			log.Fatalf("HTTP Server Shutdown Error: %v", err)
 		}
 		close(idleConnectionsClosed)
 	}()

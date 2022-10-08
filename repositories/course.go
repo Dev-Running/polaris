@@ -23,8 +23,8 @@ func NewCourseRepository(db *connect.DB) *CourseRepository {
 
 func (r *CourseRepository) Create(input model.NewCourse, ctx context.Context) (*model.Course, error) {
 	exec, err := r.DB.Client.Course.CreateOne(
-		prisma.Course.Title.Set(input.Title),
-		prisma.Course.Slug.Set(input.Slug),
+		prisma.Course.Title.Set(*input.Title),
+		prisma.Course.Slug.Set(*input.Slug),
 		prisma.Course.Description.Set(*input.Description),
 		prisma.Course.Image.Set(*input.Image),
 		prisma.Course.CreatedAt.Set(time.Now()),
@@ -38,7 +38,8 @@ func (r *CourseRepository) Create(input model.NewCourse, ctx context.Context) (*
 		ID:          exec.ID,
 		Title:       exec.Title,
 		Slug:        exec.Slug,
-		Description: &exec.Description,
+		Image:       exec.Image,
+		Description: exec.Description,
 		CreatedAt:   exec.CreatedAt.String(),
 		UpdatedAt:   exec.UpdatedAt.String(),
 		Lessons:     nil,
@@ -49,7 +50,7 @@ func (r *CourseRepository) Create(input model.NewCourse, ctx context.Context) (*
 }
 
 func (r *CourseRepository) GetAll(ctx context.Context) ([]*model.Course, error) {
-	exec, err := r.DB.Client.Course.FindMany().Take(10).Exec(ctx)
+	exec, err := r.DB.Client.Course.FindMany().Exec(ctx)
 
 	if err != nil {
 		return nil, err
@@ -63,10 +64,12 @@ func (r *CourseRepository) GetAll(ctx context.Context) ([]*model.Course, error) 
 			ID:          list.ID,
 			Title:       list.Title,
 			Slug:        list.Slug,
-			Description: &list.Description,
+			Description: list.Description,
+			Image:       list.Image,
 			CreatedAt:   list.CreatedAt.String(),
 			UpdatedAt:   list.UpdatedAt.String(),
 			Lessons:     nil,
+			Steps:       nil,
 			Enrollments: nil,
 		}
 		allCourses = append(allCourses, user)
