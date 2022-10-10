@@ -7,6 +7,7 @@ import (
 )
 
 type IUserService interface {
+	Avatar(input model.NewUser, imageType string) string
 	Create(input model.NewUser, ctx context.Context) (*model.User, error)
 	GetAll(ctx context.Context) ([]*model.User, error)
 }
@@ -27,4 +28,8 @@ func (r *UserService) Create(input model.NewUser, ctx context.Context) (*model.U
 
 func (r *UserService) GetAll(ctx context.Context) ([]*model.User, error) {
 	return r.UserRepository.GetAll(ctx)
+}
+
+func (r *UserService) Avatar(input model.NewUser, imageType string) string {
+	return r.UserRepository.Avatar(input, imageType)
 }

@@ -165,7 +165,9 @@ func (r *AuthRepository) GetUserAuthenticated(input *model.GetUserAuthInput, ctx
 		ID:        &user.ID,
 		Firstname: &user.Firstname,
 		Lastname:  &user.Lastname,
+		Avatar:    &user.Avatar,
 		Email:     &user.Email,
+		Username:  &user.Username,
 		Cellphone: &user.Cellphone,
 		TokenUser: &user.TokenUser,
 	}

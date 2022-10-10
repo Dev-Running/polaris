@@ -4,12 +4,20 @@
 
 scalar Date
 scalar Any
+scalar Upload
+
+
+
+
+
 
 type User {
   id: String!
   firstname: String!
   lastname: String!
   email: String!
+  avatar: String
+  username: String!
   password: String!
   cellphone: String!
   token_user: String!
@@ -19,6 +27,8 @@ type User {
 input NewUser{
   firstname: String
   lastname: String
+  username: String
+  file: Upload
   email: String
   password: String
   cellphone: String
@@ -99,7 +109,9 @@ type UserAuthenticated {
   id: String
   firstname: String
   lastname: String
+  username: String
   email: String
+  avatar: String
   cellphone: String
   token_user: String
 }

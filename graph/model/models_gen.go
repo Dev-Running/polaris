@@ -2,6 +2,10 @@
 
 package model
 
+import (
+	"github.com/99designs/gqlgen/graphql"
+)
+
 type AuthenticationInput struct {
 	Token    *string `json:"token"`
 	Email    *string `json:"email"`
@@ -75,11 +79,13 @@ type NewStep struct {
 }
 
 type NewUser struct {
-	Firstname *string `json:"firstname"`
-	Lastname  *string `json:"lastname"`
-	Email     *string `json:"email"`
-	Password  *string `json:"password"`
-	Cellphone *string `json:"cellphone"`
+	Firstname *string         `json:"firstname"`
+	Lastname  *string         `json:"lastname"`
+	Username  *string         `json:"username"`
+	File      *graphql.Upload `json:"file"`
+	Email     *string         `json:"email"`
+	Password  *string         `json:"password"`
+	Cellphone *string         `json:"cellphone"`
 }
 
 type Step struct {
@@ -99,6 +105,8 @@ type User struct {
 	Firstname  string        `json:"firstname"`
 	Lastname   string        `json:"lastname"`
 	Email      string        `json:"email"`
+	Avatar     *string       `json:"avatar"`
+	Username   string        `json:"username"`
 	Password   string        `json:"password"`
 	Cellphone  string        `json:"cellphone"`
 	TokenUser  string        `json:"token_user"`
@@ -109,7 +117,9 @@ type UserAuthenticated struct {
 	ID        *string `json:"id"`
 	Firstname *string `json:"firstname"`
 	Lastname  *string `json:"lastname"`
+	Username  *string `json:"username"`
 	Email     *string `json:"email"`
+	Avatar    *string `json:"avatar"`
 	Cellphone *string `json:"cellphone"`
 	TokenUser *string `json:"token_user"`
 }

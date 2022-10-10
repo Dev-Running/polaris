@@ -107,6 +107,7 @@ type ComplexityRoot struct {
 	}
 
 	User struct {
+		Avatar     func(childComplexity int) int
 		Cellphone  func(childComplexity int) int
 		Email      func(childComplexity int) int
 		Enrollment func(childComplexity int) int
@@ -115,15 +116,18 @@ type ComplexityRoot struct {
 		Lastname   func(childComplexity int) int
 		Password   func(childComplexity int) int
 		TokenUser  func(childComplexity int) int
+		Username   func(childComplexity int) int
 	}
 
 	UserAuthenticated struct {
+		Avatar    func(childComplexity int) int
 		Cellphone func(childComplexity int) int
 		Email     func(childComplexity int) int
 		Firstname func(childComplexity int) int
 		ID        func(childComplexity int) int
 		Lastname  func(childComplexity int) int
 		TokenUser func(childComplexity int) int
+		Username  func(childComplexity int) int
 	}
 }
 
@@ -502,6 +506,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Step.UpdatedAt(childComplexity), true
 
+	case "User.avatar":
+		if e.complexity.User.Avatar == nil {
+			break
+		}
+
+		return e.complexity.User.Avatar(childComplexity), true
+
 	case "User.cellphone":
 		if e.complexity.User.Cellphone == nil {
 			break
@@ -558,6 +569,20 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.TokenUser(childComplexity), true
 
+	case "User.username":
+		if e.complexity.User.Username == nil {
+			break
+		}
+
+		return e.complexity.User.Username(childComplexity), true
+
+	case "UserAuthenticated.avatar":
+		if e.complexity.UserAuthenticated.Avatar == nil {
+			break
+		}
+
+		return e.complexity.UserAuthenticated.Avatar(childComplexity), true
+
 	case "UserAuthenticated.cellphone":
 		if e.complexity.UserAuthenticated.Cellphone == nil {
 			break
@@ -599,6 +624,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.UserAuthenticated.TokenUser(childComplexity), true
+
+	case "UserAuthenticated.username":
+		if e.complexity.UserAuthenticated.Username == nil {
+			break
+		}
+
+		return e.complexity.UserAuthenticated.Username(childComplexity), true
 
 	}
 	return 0, false
@@ -681,12 +713,20 @@ var sources = []*ast.Source{
 
 scalar Date
 scalar Any
+scalar Upload
+
+
+
+
+
 
 type User {
   id: String!
   firstname: String!
   lastname: String!
   email: String!
+  avatar: String
+  username: String!
   password: String!
   cellphone: String!
   token_user: String!
@@ -696,6 +736,8 @@ type User {
 input NewUser{
   firstname: String
   lastname: String
+  username: String
+  file: Upload
   email: String
   password: String
   cellphone: String
@@ -776,7 +818,9 @@ type UserAuthenticated {
   id: String
   firstname: String
   lastname: String
+  username: String
   email: String
+  avatar: String
   cellphone: String
   token_user: String
 }
@@ -2075,6 +2119,10 @@ func (ec *executionContext) fieldContext_Mutation_authentication(ctx context.Con
 				return ec.fieldContext_User_lastname(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
+			case "avatar":
+				return ec.fieldContext_User_avatar(ctx, field)
+			case "username":
+				return ec.fieldContext_User_username(ctx, field)
 			case "password":
 				return ec.fieldContext_User_password(ctx, field)
 			case "cellphone":
@@ -2148,6 +2196,10 @@ func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context
 				return ec.fieldContext_User_lastname(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
+			case "avatar":
+				return ec.fieldContext_User_avatar(ctx, field)
+			case "username":
+				return ec.fieldContext_User_username(ctx, field)
 			case "password":
 				return ec.fieldContext_User_password(ctx, field)
 			case "cellphone":
@@ -2513,6 +2565,10 @@ func (ec *executionContext) fieldContext_Query_users(ctx context.Context, field 
 				return ec.fieldContext_User_lastname(ctx, field)
 			case "email":
 				return ec.fieldContext_User_email(ctx, field)
+			case "avatar":
+				return ec.fieldContext_User_avatar(ctx, field)
+			case "username":
+				return ec.fieldContext_User_username(ctx, field)
 			case "password":
 				return ec.fieldContext_User_password(ctx, field)
 			case "cellphone":
@@ -2815,8 +2871,12 @@ func (ec *executionContext) fieldContext_Query_userAuthenticated(ctx context.Con
 				return ec.fieldContext_UserAuthenticated_firstname(ctx, field)
 			case "lastname":
 				return ec.fieldContext_UserAuthenticated_lastname(ctx, field)
+			case "username":
+				return ec.fieldContext_UserAuthenticated_username(ctx, field)
 			case "email":
 				return ec.fieldContext_UserAuthenticated_email(ctx, field)
+			case "avatar":
+				return ec.fieldContext_UserAuthenticated_avatar(ctx, field)
 			case "cellphone":
 				return ec.fieldContext_UserAuthenticated_cellphone(ctx, field)
 			case "token_user":
@@ -3575,6 +3635,91 @@ func (ec *executionContext) fieldContext_User_email(ctx context.Context, field g
 	return fc, nil
 }
 
+func (ec *executionContext) _User_avatar(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_avatar(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Avatar, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_avatar(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_username(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_username(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Username, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_username(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _User_password(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_User_password(ctx, field)
 	if err != nil {
@@ -3888,6 +4033,47 @@ func (ec *executionContext) fieldContext_UserAuthenticated_lastname(ctx context.
 	return fc, nil
 }
 
+func (ec *executionContext) _UserAuthenticated_username(ctx context.Context, field graphql.CollectedField, obj *model.UserAuthenticated) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAuthenticated_username(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Username, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAuthenticated_username(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAuthenticated",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _UserAuthenticated_email(ctx context.Context, field graphql.CollectedField, obj *model.UserAuthenticated) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_UserAuthenticated_email(ctx, field)
 	if err != nil {
@@ -3917,6 +4103,47 @@ func (ec *executionContext) _UserAuthenticated_email(ctx context.Context, field 
 }
 
 func (ec *executionContext) fieldContext_UserAuthenticated_email(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAuthenticated",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAuthenticated_avatar(ctx context.Context, field graphql.CollectedField, obj *model.UserAuthenticated) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAuthenticated_avatar(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Avatar, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAuthenticated_avatar(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "UserAuthenticated",
 		Field:      field,
@@ -6087,7 +6314,7 @@ func (ec *executionContext) unmarshalInputNewUser(ctx context.Context, obj inter
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"firstname", "lastname", "email", "password", "cellphone"}
+	fieldsInOrder := [...]string{"firstname", "lastname", "username", "file", "email", "password", "cellphone"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -6107,6 +6334,22 @@ func (ec *executionContext) unmarshalInputNewUser(ctx context.Context, obj inter
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("lastname"))
 			it.Lastname, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "username":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("username"))
+			it.Username, err = ec.unmarshalOString2ᚖstring(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "file":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("file"))
+			it.File, err = ec.unmarshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx, v)
 			if err != nil {
 				return it, err
 			}
@@ -6731,6 +6974,17 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "avatar":
+
+			out.Values[i] = ec._User_avatar(ctx, field, obj)
+
+		case "username":
+
+			out.Values[i] = ec._User_username(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "password":
 
 			out.Values[i] = ec._User_password(ctx, field, obj)
@@ -6792,9 +7046,17 @@ func (ec *executionContext) _UserAuthenticated(ctx context.Context, sel ast.Sele
 
 			out.Values[i] = ec._UserAuthenticated_lastname(ctx, field, obj)
 
+		case "username":
+
+			out.Values[i] = ec._UserAuthenticated_username(ctx, field, obj)
+
 		case "email":
 
 			out.Values[i] = ec._UserAuthenticated_email(ctx, field, obj)
+
+		case "avatar":
+
+			out.Values[i] = ec._UserAuthenticated_avatar(ctx, field, obj)
 
 		case "cellphone":
 
@@ -7928,6 +8190,22 @@ func (ec *executionContext) marshalOString2ᚖstring(ctx context.Context, sel as
 		return graphql.Null
 	}
 	res := graphql.MarshalString(*v)
+	return res
+}
+
+func (ec *executionContext) unmarshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, v interface{}) (*graphql.Upload, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := graphql.UnmarshalUpload(v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
+func (ec *executionContext) marshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚐUpload(ctx context.Context, sel ast.SelectionSet, v *graphql.Upload) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	res := graphql.MarshalUpload(*v)
 	return res
 }
 
