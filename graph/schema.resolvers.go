@@ -24,7 +24,7 @@ func (r *mutationResolver) Authentication(ctx context.Context, input *model.Auth
 func (r *mutationResolver) CreateUser(ctx context.Context, input *model.NewUser) (*model.User, error) {
 	userData, err := r.UserService.Create(*input, ctx)
 	if err != nil {
-		return nil, fmt.Errorf("Já existe um usuário utilizando esse e-mail ou telefone")
+		return nil, fmt.Errorf("Já existe um usuário utilizando esse e-mail ou telefone!")
 	}
 
 	return userData, nil

@@ -1,0 +1,20 @@
+{
+  "name": "user",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev" :"nodemon -L --exec go run server.go --signal SIGUSR2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/laurentino14/user.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/laurentino14/user/issues"
+  },
+  "homepage": "https://github.com/laurentino14/user#readme"
+}

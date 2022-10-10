@@ -3,6 +3,11 @@ package main
 import (
 	"context"
 	"flag"
+	"log"
+	"net/http"
+	"os"
+	"os/signal"
+
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/laurentino14/user/graph"
@@ -11,10 +16,6 @@ import (
 	"github.com/laurentino14/user/repositories"
 	"github.com/laurentino14/user/services"
 	"github.com/rs/cors"
-	"log"
-	"net/http"
-	"os"
-	"os/signal"
 )
 
 const defaultPort = "3131"
@@ -52,8 +53,12 @@ func main() {
 	httpServer := http.Server{
 		Addr: *listenAddress,
 	}
-	idleConnectionsClosed := make(chan struct{})
 	cors.AllowAll().Handler(srv)
+	idleConnectionsClosed := make(chan struct{})
+
+	if err := http.ListenAndServe(":3131", nil); err != http.ErrServerClosed {
+		log.Fatalf("HTTP server ListenAndServe Error: %v", err)
+	}
 
 	go func() {
 		sigint := make(chan os.Signal, 1)
@@ -64,10 +69,6 @@ func main() {
 		}
 		close(idleConnectionsClosed)
 	}()
-
-	if err := http.ListenAndServe(":3131", nil); err != http.ErrServerClosed {
-		log.Fatalf("HTTP server ListenAndServe Error: %v", err)
-	}
 
 	<-idleConnectionsClosed
 
