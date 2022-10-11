@@ -10,6 +10,7 @@ import (
 	"github.com/laurentino14/user/graph/model"
 	"github.com/laurentino14/user/prisma"
 	"github.com/laurentino14/user/prisma/connect"
+	"github.com/laurentino14/user/repositories/utils"
 )
 
 type IAuthRepository interface {
@@ -45,7 +46,7 @@ func (r *AuthRepository) Auth(input *model.AuthenticationInput, ctx context.Cont
 		if !t {
 			return nil, fmt.Errorf("token invalido ou expirado, faca login novamente")
 		}
-		exec, err := r.DB.Client.User.FindFirst(prisma.User.TokenUser.Equals(*input.Token)).Exec(ctx)
+		exec, err := r.DB.Client.User.FindFirst(prisma.User.TokenUser.Equals(*input.Token)).With(prisma.User.Enrollment.Fetch()).Exec(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("usuário não encontrado, faca login novamente")
 		}
@@ -62,6 +63,18 @@ func (r *AuthRepository) Auth(input *model.AuthenticationInput, ctx context.Cont
 			return nil, fmt.Errorf("erro na validacao do token")
 		}
 
+		enrollments := []*model.Enrollment{}
+		for _, enr := range exec.RelationsUser.Enrollment {
+			enrollments = append(enrollments, &model.Enrollment{
+				ID:        enr.ID,
+				CourseID:  enr.CourseID,
+				CreatedAt: enr.CreatedAt.String(),
+				UpdatedAt: utils.ExtractData(enr.UpdatedAt),
+				DeletedAt: utils.ExtractData(enr.DeletedAt),
+				UserID:    enr.UserID,
+			})
+		}
+
 		user := &model.User{
 			ID:         exec.ID,
 			Firstname:  exec.Firstname,
@@ -70,7 +83,7 @@ func (r *AuthRepository) Auth(input *model.AuthenticationInput, ctx context.Cont
 			Password:   exec.Password,
 			Cellphone:  exec.Cellphone,
 			TokenUser:  refreshToken,
-			Enrollment: nil,
+			Enrollment: enrollments,
 		}
 
 		return user, nil
@@ -78,7 +91,7 @@ func (r *AuthRepository) Auth(input *model.AuthenticationInput, ctx context.Cont
 	}
 
 	if input.Password != nil && input.Email != nil && input.Token == nil {
-		exec, err := r.DB.Client.User.FindUnique(prisma.User.Email.Equals(*input.Email)).Exec(ctx)
+		exec, err := r.DB.Client.User.FindUnique(prisma.User.Email.Equals(*input.Email)).With(prisma.User.Enrollment.Fetch()).Exec(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("erro de conexão com o banco de dados")
 		}
@@ -93,6 +106,18 @@ func (r *AuthRepository) Auth(input *model.AuthenticationInput, ctx context.Cont
 			return nil, fmt.Errorf("erro na validacao do token")
 		}
 
+		enrollments := []*model.Enrollment{}
+		for _, enr := range exec.RelationsUser.Enrollment {
+			enrollments = append(enrollments, &model.Enrollment{
+				ID:        enr.ID,
+				CourseID:  enr.CourseID,
+				CreatedAt: enr.CreatedAt.String(),
+				UpdatedAt: utils.ExtractData(enr.UpdatedAt),
+				DeletedAt: utils.ExtractData(enr.DeletedAt),
+				UserID:    enr.UserID,
+			})
+		}
+
 		user := &model.User{
 			ID:         exec.ID,
 			Firstname:  exec.Firstname,
@@ -101,7 +126,7 @@ func (r *AuthRepository) Auth(input *model.AuthenticationInput, ctx context.Cont
 			Password:   exec.Password,
 			Cellphone:  exec.Cellphone,
 			TokenUser:  refreshToken,
-			Enrollment: nil,
+			Enrollment: enrollments,
 		}
 
 		return user, nil
@@ -156,7 +181,7 @@ type UserAuthenticated struct {
 }
 
 func (r *AuthRepository) GetUserAuthenticated(input *model.GetUserAuthInput, ctx context.Context) (*model.UserAuthenticated, error) {
-	user, err := r.DB.Client.User.FindFirst(prisma.User.TokenUser.Equals(*input.Token)).Exec(ctx)
+	user, err := r.DB.Client.User.FindFirst(prisma.User.TokenUser.Equals(*input.Token)).With(prisma.User.Enrollment.Fetch()).Exec(ctx)
 
 	if err != nil {
 		return nil, err

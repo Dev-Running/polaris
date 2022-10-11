@@ -32,7 +32,7 @@ func (r *StepRepository) Create(input model.NewStep, ctx context.Context) (*mode
 		prisma.Step.Slug.Set(input.Slug),
 		prisma.Step.Course.Link(prisma.Course.ID.Equals(input.CourseID)),
 		prisma.Step.CreatedAt.Set(time.Now()),
-	).Exec(ctx)
+	).With(prisma.Step.Lessons.Fetch()).Exec(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +65,7 @@ func (r *StepRepository) Create(input model.NewStep, ctx context.Context) (*mode
 }
 
 func (r *StepRepository) GetAll(ctx context.Context) ([]*model.Step, error) {
-	exec, err := r.DB.Client.Step.FindMany().Take(10).Exec(ctx)
+	exec, err := r.DB.Client.Step.FindMany().With(prisma.Step.Lessons.Fetch()).Take(10).Exec(ctx)
 
 	if err != nil {
 		return nil, err
