@@ -3,12 +3,13 @@ package repositories
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"github.com/gobuffalo/envy"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/laurentino14/user/graph/model"
 	"github.com/laurentino14/user/prisma"
 	"github.com/laurentino14/user/prisma/connect"
-	"time"
 )
 
 type IAuthRepository interface {

@@ -2,9 +2,11 @@ package repositories
 
 import (
 	"context"
+
 	"github.com/laurentino14/user/graph/model"
 	"github.com/laurentino14/user/prisma"
 	"github.com/laurentino14/user/prisma/connect"
+	"github.com/laurentino14/user/repositories/utils"
 )
 
 type ILessonRepository interface {
@@ -26,26 +28,27 @@ func NewLessonRepository(db *connect.DB) *LessonRepository {
 // Create implements LessonRepository
 func (r *LessonRepository) Create(input model.NewLesson, ctx context.Context) (*model.Lesson, error) {
 	exec, err := r.DB.Client.Lesson.CreateOne(
-		prisma.Lesson.Title.Set(input.Title),
-		prisma.Lesson.Slug.Set(input.Slug),
-		prisma.Lesson.Link.Set(input.Link),
-		prisma.Lesson.Step.Link(prisma.Step.ID.Equals(input.StepID)),
+		prisma.Lesson.Title.Set(*input.Title),
+		prisma.Lesson.Slug.Set(*input.Slug),
+		prisma.Lesson.Description.Set(*input.Description),
+		prisma.Lesson.Link.Set(*input.Link),
+		prisma.Lesson.Step.Link(prisma.Step.ID.Equals(*input.StepID)),
+		prisma.Lesson.Course.Link(prisma.Course.ID.Equals(*input.CourseID)),
 	).Exec(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	createdAt := exec.CreatedAt.String()
-	updatedAt := exec.UpdatedAt.String()
-
 	lessonData := &model.Lesson{
-		ID:        &exec.ID,
-		Title:     exec.Title,
-		Slug:      exec.Slug,
-		Link:      exec.Link,
-		CreatedAt: &createdAt,
-		UpdatedAt: &updatedAt,
-		StepID:    exec.StepID,
+		ID:          exec.ID,
+		Title:       exec.Title,
+		Slug:        exec.Slug,
+		Link:        exec.Link,
+		CreatedAt:   exec.CreatedAt.String(),
+		UpdatedAt:   utils.ExtractData(exec.UpdatedAt),
+		StepID:      exec.StepID,
+		CourseID:    exec.CourseID,
+		Description: exec.Description,
 	}
 	return lessonData, nil
 }
@@ -62,17 +65,15 @@ func (r *LessonRepository) GetAll(ctx context.Context) ([]*model.Lesson, error) 
 
 	for _, list := range exec {
 
-		createdAt := list.CreatedAt.String()
-		updatedAt := list.CreatedAt.String()
-
 		lesson := &model.Lesson{
-			ID:        &list.ID,
-			Title:     list.Title,
-			Slug:      list.Slug,
-			Link:      list.Link,
-			CreatedAt: &createdAt,
-			UpdatedAt: &updatedAt,
-			StepID:    list.StepID,
+			ID:          list.ID,
+			Title:       list.Title,
+			Slug:        list.Slug,
+			Link:        list.Link,
+			CreatedAt:   list.CreatedAt.String(),
+			UpdatedAt:   utils.ExtractData(list.UpdatedAt),
+			StepID:      list.StepID,
+			Description: list.Description,
 		}
 		allLessons = append(allLessons, lesson)
 	}

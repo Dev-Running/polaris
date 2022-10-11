@@ -2,10 +2,12 @@ package repositories
 
 import (
 	"context"
+	"time"
+
 	"github.com/laurentino14/user/graph/model"
 	"github.com/laurentino14/user/prisma"
 	"github.com/laurentino14/user/prisma/connect"
-	"time"
+	"github.com/laurentino14/user/repositories/utils"
 )
 
 type IStepRepository interface {
@@ -30,10 +32,23 @@ func (r *StepRepository) Create(input model.NewStep, ctx context.Context) (*mode
 		prisma.Step.Slug.Set(input.Slug),
 		prisma.Step.Course.Link(prisma.Course.ID.Equals(input.CourseID)),
 		prisma.Step.CreatedAt.Set(time.Now()),
-		prisma.Step.UpdatedAt.Set(time.Now()),
 	).Exec(ctx)
 	if err != nil {
 		return nil, err
+	}
+
+	lessons := []*model.Lesson{}
+
+	for _, l := range exec.RelationsStep.Lessons {
+		lessons = append(lessons, &model.Lesson{
+			ID:          l.ID,
+			Title:       l.Title,
+			Slug:        l.Slug,
+			Description: l.Description,
+			StepID:      l.StepID,
+			CreatedAt:   l.CreatedAt.String(),
+			UpdatedAt:   utils.ExtractData(l.UpdatedAt),
+		})
 	}
 
 	stepData := &model.Step{
@@ -41,7 +56,9 @@ func (r *StepRepository) Create(input model.NewStep, ctx context.Context) (*mode
 		Title:       exec.Title,
 		Description: exec.Description,
 		Slug:        exec.Slug,
-		Lessons:     nil,
+		Lessons:     lessons,
+		CreatedAt:   exec.CreatedAt.String(),
+		UpdatedAt:   utils.ExtractData(exec.UpdatedAt),
 		CourseID:    exec.CourseID,
 	}
 	return stepData, nil
@@ -55,8 +72,20 @@ func (r *StepRepository) GetAll(ctx context.Context) ([]*model.Step, error) {
 	}
 
 	allSteps := []*model.Step{}
-
+	lessons := []*model.Lesson{}
 	for _, list := range exec {
+
+		for _, l := range list.RelationsStep.Lessons {
+			lessons = append(lessons, &model.Lesson{
+				ID:          l.ID,
+				Title:       l.Title,
+				Slug:        l.Slug,
+				Description: l.Description,
+				StepID:      l.StepID,
+				CreatedAt:   l.CreatedAt.String(),
+				UpdatedAt:   utils.ExtractData(l.UpdatedAt),
+			})
+		}
 
 		user := &model.Step{
 			ID:          list.ID,
@@ -64,8 +93,8 @@ func (r *StepRepository) GetAll(ctx context.Context) ([]*model.Step, error) {
 			Slug:        list.Slug,
 			Description: list.Description,
 			CreatedAt:   list.CreatedAt.String(),
-			UpdatedAt:   list.UpdatedAt.String(),
-			Lessons:     nil,
+			UpdatedAt:   utils.ExtractData(list.UpdatedAt),
+			Lessons:     lessons,
 			CourseID:    list.CourseID,
 		}
 		allSteps = append(allSteps, user)

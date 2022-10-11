@@ -2,10 +2,12 @@ package repositories
 
 import (
 	"context"
+	"time"
+
 	"github.com/laurentino14/user/graph/model"
 	"github.com/laurentino14/user/prisma"
 	"github.com/laurentino14/user/prisma/connect"
-	"time"
+	"github.com/laurentino14/user/repositories/utils"
 )
 
 type IEnrollmentRepository interface {
@@ -31,17 +33,11 @@ func (r *EnrollmentRepository) Create(input model.NewEnrollment, ctx context.Con
 		return nil, err
 	}
 
-	r.DB.Client.User.UpsertOne(prisma.User.ID.Equals(exec.UserID)).Update(prisma.User.Enrollment.Link(prisma.Enrollment.ID.Equals(exec.ID)))
-
-	up, _ := exec.UpdatedAt()
-	upd := up.String()
-	de, _ := exec.DeletedAt()
-	del := de.String()
 	enrollmentData := &model.Enrollment{
 		ID:        exec.ID,
 		CreatedAt: exec.CreatedAt.String(),
-		UpdatedAt: upd,
-		DeletedAt: del,
+		UpdatedAt: utils.ExtractData(exec.UpdatedAt),
+		DeletedAt: utils.ExtractData(exec.DeletedAt),
 		UserID:    exec.UserID,
 		CourseID:  exec.CourseID,
 	}
@@ -59,19 +55,11 @@ func (r *EnrollmentRepository) GetAll(ctx context.Context) ([]*model.Enrollment,
 
 	for _, list := range exec {
 
-		up, _ := list.UpdatedAt()
-
-		updatedAt := up.String()
-
-		del, _ := list.DeletedAt()
-
-		deletedAt := del.String()
-
 		user := &model.Enrollment{
 			ID:        list.ID,
 			CreatedAt: list.CreatedAt.String(),
-			UpdatedAt: updatedAt,
-			DeletedAt: deletedAt,
+			UpdatedAt: utils.ExtractData(list.UpdatedAt),
+			DeletedAt: utils.ExtractData(list.DeletedAt),
 			UserID:    list.UserID,
 			CourseID:  list.CourseID,
 		}

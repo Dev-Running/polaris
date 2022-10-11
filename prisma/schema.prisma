@@ -13,18 +13,24 @@ datasource db {
   url      = "postgresql://postgres:dev@localhost:5432/devrunning?schema=public"
 }
 
+enum Role {
+  ADMIN
+  USER
+}
+
 model User {
   id         String       @id @default(uuid())
   firstname  String
   lastname   String
   username   String
+  role       Role         @default(USER)
   avatar     String       @unique
   email      String       @unique
   password   String
   cellphone  String       @unique
   token_user String
   created_at DateTime     @default(now()) @db.Date()
-  updated_at DateTime     @updatedAt @db.Date()
+  updated_at DateTime?    @updatedAt
   Enrollment Enrollment[]
 
   @@map("users")
@@ -35,9 +41,10 @@ model Course {
   title       String       @unique
   slug        String       @unique
   description String
-  image String
+  image       String
   created_at  DateTime     @default(now()) @db.Date()
-  updated_at  DateTime     @updatedAt @db.Date()
+  updated_at  DateTime?    @updatedAt
+  Lesson      Lesson[]
   Step        Step[]
   Enrollment  Enrollment[]
 
@@ -47,8 +54,8 @@ model Course {
 model Enrollment {
   id         String    @id @default(cuid())
   created_at DateTime  @db.Date()
-  updated_at DateTime? @updatedAt @db.Date()
-  deleted_at DateTime? @db.Date()
+  updated_at DateTime? @updatedAt
+  deleted_at DateTime?
   User       User      @relation(fields: [userId], references: [id])
   Course     Course    @relation(fields: [courseId], references: [id])
   userId     String
@@ -58,28 +65,31 @@ model Enrollment {
 }
 
 model Step {
-  id          String   @id @default(cuid())
-  title       String   @unique
+  id          String    @id @default(cuid())
+  title       String    @unique
   description String
-  slug        String   @unique
-  created_at  DateTime @default(now()) @db.Date()
-  updated_at  DateTime @updatedAt @db.Date()
+  slug        String    @unique
+  created_at  DateTime  @default(now()) @db.Date()
+  updated_at  DateTime? @updatedAt
   Lessons     Lesson[]
-  Course      Course   @relation(fields: [courseId], references: [id])
+  Course      Course    @relation(fields: [courseId], references: [id])
   courseId    String
 
   @@map("steps")
 }
 
 model Lesson {
-  id         String   @id @default(cuid())
-  title      String   @unique
-  slug       String   @unique
-  link       String   @unique
-  created_at DateTime @default(now()) @db.Date()
-  updated_at DateTime @updatedAt @db.Date()
-  Step       Step     @relation(fields: [stepId], references: [id])
-  stepId     String
+  id          String    @id @default(cuid())
+  title       String    @unique
+  slug        String    @unique
+  description String
+  link        String    @unique
+  created_at  DateTime  @default(now()) @db.Date()
+  updated_at  DateTime? @updatedAt
+  Step        Step      @relation(fields: [stepId], references: [id])
+  stepId      String
+  Course      Course    @relation(fields: [courseId], references: [id])
+  courseId    String
 
   @@map("lessons")
 }

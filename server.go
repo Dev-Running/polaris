@@ -27,10 +27,6 @@ func main() {
 	if port == "" {
 		port = defaultPort
 	}
-	//router := chi.NewRouter()
-
-	// Add CORS middleware around every request
-	// See https://github.com/rs/cors for full option listing
 
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
 		LessonService:     services.NewLessonService(repositories.NewLessonRepository(connect)),

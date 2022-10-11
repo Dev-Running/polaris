@@ -3,6 +3,10 @@
 package model
 
 import (
+	"fmt"
+	"io"
+	"strconv"
+
 	"github.com/99designs/gqlgen/graphql"
 )
 
@@ -20,9 +24,9 @@ type Course struct {
 	Image       string        `json:"image"`
 	CreatedAt   string        `json:"created_at"`
 	UpdatedAt   string        `json:"updated_at"`
-	Lessons     []*Lesson     `json:"Lessons"`
-	Steps       []*Step       `json:"Steps"`
-	Enrollments []*Enrollment `json:"Enrollments"`
+	Lessons     []*Lesson     `json:"lessons"`
+	Steps       []*Step       `json:"steps"`
+	Enrollments []*Enrollment `json:"enrollments"`
 }
 
 type Enrollment struct {
@@ -39,13 +43,15 @@ type GetUserAuthInput struct {
 }
 
 type Lesson struct {
-	ID        *string `json:"id"`
-	Title     string  `json:"title"`
-	Slug      string  `json:"slug"`
-	Link      string  `json:"link"`
-	CreatedAt *string `json:"created_at"`
-	UpdatedAt *string `json:"updated_at"`
-	StepID    string  `json:"stepId"`
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Slug        string `json:"slug"`
+	Link        string `json:"link"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
+	StepID      string `json:"stepId"`
+	CourseID    string `json:"courseId"`
 }
 
 type NewCourse struct {
@@ -63,19 +69,19 @@ type NewEnrollment struct {
 }
 
 type NewLesson struct {
-	Title  string `json:"title"`
-	Slug   string `json:"slug"`
-	Link   string `json:"link"`
-	StepID string `json:"stepId"`
+	Title       *string `json:"title"`
+	Description *string `json:"description"`
+	Slug        *string `json:"slug"`
+	Link        *string `json:"link"`
+	StepID      *string `json:"stepId"`
+	CourseID    *string `json:"courseId"`
 }
 
 type NewStep struct {
-	Title       string  `json:"title"`
-	Description string  `json:"description"`
-	Slug        string  `json:"slug"`
-	CreatedAt   *string `json:"created_at"`
-	UpdatedAt   *string `json:"updated_at"`
-	CourseID    string  `json:"courseId"`
+	Title       string `json:"title"`
+	Description string `json:"description"`
+	Slug        string `json:"slug"`
+	CourseID    string `json:"courseId"`
 }
 
 type NewUser struct {
@@ -96,7 +102,6 @@ type Step struct {
 	CreatedAt   string    `json:"created_at"`
 	UpdatedAt   string    `json:"updated_at"`
 	Lessons     []*Lesson `json:"lessons"`
-	Course      *Course   `json:"Course"`
 	CourseID    string    `json:"courseId"`
 }
 
@@ -104,13 +109,14 @@ type User struct {
 	ID         string        `json:"id"`
 	Firstname  string        `json:"firstname"`
 	Lastname   string        `json:"lastname"`
+	Role       Role          `json:"role"`
 	Email      string        `json:"email"`
 	Avatar     *string       `json:"avatar"`
 	Username   string        `json:"username"`
 	Password   string        `json:"password"`
 	Cellphone  string        `json:"cellphone"`
 	TokenUser  string        `json:"token_user"`
-	Enrollment []*Enrollment `json:"Enrollment"`
+	Enrollment []*Enrollment `json:"enrollment"`
 }
 
 type UserAuthenticated struct {
@@ -122,4 +128,45 @@ type UserAuthenticated struct {
 	Avatar    *string `json:"avatar"`
 	Cellphone *string `json:"cellphone"`
 	TokenUser *string `json:"token_user"`
+}
+
+type Role string
+
+const (
+	RoleAdmin Role = "ADMIN"
+	RoleUser  Role = "USER"
+)
+
+var AllRole = []Role{
+	RoleAdmin,
+	RoleUser,
+}
+
+func (e Role) IsValid() bool {
+	switch e {
+	case RoleAdmin, RoleUser:
+		return true
+	}
+	return false
+}
+
+func (e Role) String() string {
+	return string(e)
+}
+
+func (e *Role) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Role(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Role", str)
+	}
+	return nil
+}
+
+func (e Role) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
