@@ -11,19 +11,31 @@ enum Role {
   USER
 }
 
+enum Platform{
+  DR
+  GITHUB
+  GOOGLE
+}
+
 type User {
   id: String!
   firstname: String!
   lastname: String!
   role: Role!
   email: String!
-  avatar: String
+  avatar: String!
+  platform: Platform!
+  github: String!
+  bio: String!
+  location: String!
+  twitter: String!
+  site: String!
   username: String!
   password: String!
-  cellphone: String!
   token_user: String!
   enrollment: [Enrollment!]!
 }
+
 
 input NewUser{
   firstname: String
@@ -32,8 +44,29 @@ input NewUser{
   file: Upload
   email: String
   password: String
-  cellphone: String
 }
+
+input NewUserGITHUB{
+  firstname: String
+  lastname: String
+  username: String
+  avatar: String
+  email: String
+  github: String
+  bio: String
+  location: String
+  twitter: String
+  site: String
+}
+
+input NewUserGOOGLE{
+  firstname: String
+  lastname: String
+  username: String
+  avatar: String
+  email: String  
+}
+
 
 type Course {
   id: String!
@@ -120,7 +153,6 @@ type UserAuthenticated {
   username: String
   email: String
   avatar: String
-  cellphone: String
   token_user: String
 }
 
@@ -140,7 +172,6 @@ type Query {
   lessons: [Lesson]
   enrollments: [Enrollment!]!
   userAuthenticated(input: GetUserAuthInput): UserAuthenticated!
-
 }
 
 
@@ -149,6 +180,8 @@ type Mutation {
 
   authentication(input:AuthenticationInput): User!
   createUser(input: NewUser): User!
+  createUserGITHUB(input: NewUserGITHUB): User!
+  createUserGOOGLE(input: NewUserGOOGLE): User!
   createCourse(input: NewCourse!): Course!
   createStep(input: NewStep!): Step!
   createLesson(input: NewLesson!): Lesson!

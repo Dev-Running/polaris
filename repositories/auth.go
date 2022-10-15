@@ -79,9 +79,17 @@ func (r *AuthRepository) Auth(input *model.AuthenticationInput, ctx context.Cont
 			ID:         exec.ID,
 			Firstname:  exec.Firstname,
 			Lastname:   exec.Lastname,
+			Role:       model.Role(exec.Role),
+			Avatar:     exec.Avatar,
+			Platform:   model.Platform(exec.Platform),
+			Github:     utils.ExtractString(exec.Github),
+			Bio:        utils.ExtractString(exec.Bio),
+			Location:   utils.ExtractString(exec.Location),
+			Twitter:    utils.ExtractString(exec.Twitter),
+			Site:       utils.ExtractString(exec.Site),
+			Username:   exec.Username,
 			Email:      exec.Email,
-			Password:   exec.Password,
-			Cellphone:  exec.Cellphone,
+			Password:   utils.ExtractString(exec.Password),
 			TokenUser:  refreshToken,
 			Enrollment: enrollments,
 		}
@@ -123,8 +131,7 @@ func (r *AuthRepository) Auth(input *model.AuthenticationInput, ctx context.Cont
 			Firstname:  exec.Firstname,
 			Lastname:   exec.Lastname,
 			Email:      exec.Email,
-			Password:   exec.Password,
-			Cellphone:  exec.Cellphone,
+			Password:   utils.ExtractString(exec.Password),
 			TokenUser:  refreshToken,
 			Enrollment: enrollments,
 		}
@@ -186,16 +193,14 @@ func (r *AuthRepository) GetUserAuthenticated(input *model.GetUserAuthInput, ctx
 	if err != nil {
 		return nil, err
 	}
-
 	userData := &model.UserAuthenticated{
 		ID:        &user.ID,
 		Firstname: &user.Firstname,
 		Lastname:  &user.Lastname,
-		Avatar:    &user.Avatar,
 		Email:     &user.Email,
 		Username:  &user.Username,
-		Cellphone: &user.Cellphone,
 		TokenUser: &user.TokenUser,
+		Avatar:    &user.Avatar,
 	}
 	return userData, nil
 }

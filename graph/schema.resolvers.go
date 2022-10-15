@@ -30,6 +30,26 @@ func (r *mutationResolver) CreateUser(ctx context.Context, input *model.NewUser)
 	return userData, nil
 }
 
+// CreateUserGithub is the resolver for the createUserGITHUB field.
+func (r *mutationResolver) CreateUserGithub(ctx context.Context, input *model.NewUserGithub) (*model.User, error) {
+	user, err := r.UserService.CreateUserGITHUB(*input, ctx)
+	if err != nil {
+		return nil, err
+
+	}
+	return user, nil
+}
+
+// CreateUserGoogle is the resolver for the createUserGOOGLE field.
+func (r *mutationResolver) CreateUserGoogle(ctx context.Context, input *model.NewUserGoogle) (*model.User, error) {
+	user, err := r.UserService.CreateUserGOOGLE(*input, ctx)
+	if err != nil {
+		return nil, err
+
+	}
+	return user, nil
+}
+
 // CreateCourse is the resolver for the createCourse field.
 func (r *mutationResolver) CreateCourse(ctx context.Context, input model.NewCourse) (*model.Course, error) {
 	courseData, err := r.CourseService.Create(input, ctx)

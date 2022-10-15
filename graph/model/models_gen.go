@@ -91,7 +91,27 @@ type NewUser struct {
 	File      *graphql.Upload `json:"file"`
 	Email     *string         `json:"email"`
 	Password  *string         `json:"password"`
-	Cellphone *string         `json:"cellphone"`
+}
+
+type NewUserGithub struct {
+	Firstname *string `json:"firstname"`
+	Lastname  *string `json:"lastname"`
+	Username  *string `json:"username"`
+	Avatar    *string `json:"avatar"`
+	Email     *string `json:"email"`
+	Github    *string `json:"github"`
+	Bio       *string `json:"bio"`
+	Location  *string `json:"location"`
+	Twitter   *string `json:"twitter"`
+	Site      *string `json:"site"`
+}
+
+type NewUserGoogle struct {
+	Firstname *string `json:"firstname"`
+	Lastname  *string `json:"lastname"`
+	Username  *string `json:"username"`
+	Avatar    *string `json:"avatar"`
+	Email     *string `json:"email"`
 }
 
 type Step struct {
@@ -111,10 +131,15 @@ type User struct {
 	Lastname   string        `json:"lastname"`
 	Role       Role          `json:"role"`
 	Email      string        `json:"email"`
-	Avatar     *string       `json:"avatar"`
+	Avatar     string        `json:"avatar"`
+	Platform   Platform      `json:"platform"`
+	Github     string        `json:"github"`
+	Bio        string        `json:"bio"`
+	Location   string        `json:"location"`
+	Twitter    string        `json:"twitter"`
+	Site       string        `json:"site"`
 	Username   string        `json:"username"`
 	Password   string        `json:"password"`
-	Cellphone  string        `json:"cellphone"`
 	TokenUser  string        `json:"token_user"`
 	Enrollment []*Enrollment `json:"enrollment"`
 }
@@ -126,8 +151,50 @@ type UserAuthenticated struct {
 	Username  *string `json:"username"`
 	Email     *string `json:"email"`
 	Avatar    *string `json:"avatar"`
-	Cellphone *string `json:"cellphone"`
 	TokenUser *string `json:"token_user"`
+}
+
+type Platform string
+
+const (
+	PlatformDr     Platform = "DR"
+	PlatformGithub Platform = "GITHUB"
+	PlatformGoogle Platform = "GOOGLE"
+)
+
+var AllPlatform = []Platform{
+	PlatformDr,
+	PlatformGithub,
+	PlatformGoogle,
+}
+
+func (e Platform) IsValid() bool {
+	switch e {
+	case PlatformDr, PlatformGithub, PlatformGoogle:
+		return true
+	}
+	return false
+}
+
+func (e Platform) String() string {
+	return string(e)
+}
+
+func (e *Platform) UnmarshalGQL(v interface{}) error {
+	str, ok := v.(string)
+	if !ok {
+		return fmt.Errorf("enums must be strings")
+	}
+
+	*e = Platform(str)
+	if !e.IsValid() {
+		return fmt.Errorf("%s is not a valid Platform", str)
+	}
+	return nil
+}
+
+func (e Platform) MarshalGQL(w io.Writer) {
+	fmt.Fprint(w, strconv.Quote(e.String()))
 }
 
 type Role string

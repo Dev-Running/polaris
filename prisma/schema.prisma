@@ -18,20 +18,32 @@ enum Role {
   USER
 }
 
+enum Platform {
+  DR
+  GITHUB
+  GOOGLE
+}
+
 model User {
-  id         String       @id @default(uuid())
-  firstname  String
-  lastname   String
-  username   String
-  role       Role         @default(USER)
-  avatar     String       @unique
-  email      String       @unique
-  password   String
-  cellphone  String       @unique
-  token_user String
-  created_at DateTime     @default(now()) @db.Date()
-  updated_at DateTime?    @updatedAt
-  Enrollment Enrollment[]
+  id             String       @id @default(uuid())
+  firstname      String
+  lastname       String
+  username       String       @unique
+  role           Role         @default(USER)
+  platform       Platform     @default(DR)
+  bio            String?
+  site           String?
+  twitter        String?
+  github         String?
+  location       String?
+  email_verified Boolean
+  avatar         String       @unique
+  email          String       @unique
+  password       String?
+  token_user     String
+  created_at     DateTime     @default(now()) @db.Date()
+  updated_at     DateTime?    @updatedAt
+  Enrollment     Enrollment[]
 
   @@map("users")
 }

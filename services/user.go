@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+
 	"github.com/laurentino14/user/graph/model"
 	"github.com/laurentino14/user/repositories"
 )
@@ -9,6 +10,8 @@ import (
 type IUserService interface {
 	Avatar(input model.NewUser, imageType string) string
 	Create(input model.NewUser, ctx context.Context) (*model.User, error)
+	CreateUserGITHUB(input model.NewUserGithub, ctx context.Context) (*model.User, error)
+	CreateUserGOOGLE(input model.NewUserGoogle, ctx context.Context) (*model.User, error)
 	GetAll(ctx context.Context) ([]*model.User, error)
 }
 
@@ -32,4 +35,12 @@ func (r *UserService) GetAll(ctx context.Context) ([]*model.User, error) {
 
 func (r *UserService) Avatar(input model.NewUser, imageType string) string {
 	return r.UserRepository.Avatar(input, imageType)
+}
+
+func (r *UserService) CreateUserGITHUB(input model.NewUserGithub, ctx context.Context) (*model.User, error) {
+	return r.UserRepository.CreateUserGITHUB(input, ctx)
+}
+
+func (r *UserService) CreateUserGOOGLE(input model.NewUserGoogle, ctx context.Context) (*model.User, error) {
+	return r.UserRepository.CreateUserGOOGLE(input, ctx)
 }

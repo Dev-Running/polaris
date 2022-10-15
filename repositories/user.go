@@ -8,7 +8,6 @@ import (
 	"path"
 	"strings"
 
-	"github.com/99designs/gqlgen/graphql"
 	"github.com/disintegration/imaging"
 	"github.com/laurentino14/user/graph/model"
 	"github.com/laurentino14/user/prisma"
@@ -18,7 +17,9 @@ import (
 
 type IUserRepository interface {
 	Avatar(input model.NewUser, imageType string) string
-	Create(input model.NewUser, ctx context.Context, file *graphql.Upload) (*model.User, error)
+	Create(input model.NewUser, ctx context.Context) (*model.User, error)
+	CreateUserGITHUB(input model.NewUserGithub, ctx context.Context) (*model.User, error)
+	CreateUserGOOGLE(input model.NewUserGoogle, ctx context.Context) (*model.User, error)
 	GetAll(ctx context.Context) ([]*model.User, error)
 }
 
@@ -32,6 +33,9 @@ func NewUserRepository(db *connect.DB) *UserRepository {
 func (r *UserRepository) Avatar(i model.NewUser, imageType string) string {
 	if i.File.Size != 0 {
 		return strings.Join([]string{"http://localhost:3131/static/", *i.Username, imageType}, "")
+	}
+	if i.File == nil {
+		return "http://localhost:3131/static/default.jpg"
 	}
 	return "http://localhost:3131/static/default.jpg"
 }
@@ -101,17 +105,17 @@ func (r *UserRepository) Create(input model.NewUser, ctx context.Context) (*mode
 		prisma.User.Firstname.Set(*input.Firstname),
 		prisma.User.Lastname.Set(*input.Lastname),
 		prisma.User.Username.Set(*input.Username),
+		prisma.User.EmailVerified.Set(false),
 		prisma.User.Avatar.Set(r.Avatar(input, image)),
 		prisma.User.Email.Set(*input.Email),
-		prisma.User.Password.Set(*input.Password),
-		prisma.User.Cellphone.Set(*input.Cellphone),
 		prisma.User.TokenUser.Set(""),
+		prisma.User.Platform.Set(prisma.PlatformDR),
+		prisma.User.Password.Set(*input.Password),
 	).Exec(ctx)
 	if err != nil {
 		return nil, err
 	}
 	a := ""
-	aa := r.Avatar(input, image)
 	slEnroll := []*model.Enrollment{}
 	sl := exec.RelationsUser.Enrollment
 
@@ -133,10 +137,13 @@ func (r *UserRepository) Create(input model.NewUser, ctx context.Context) (*mode
 		Firstname:  exec.Firstname,
 		Lastname:   exec.Lastname,
 		Email:      exec.Email,
-		Avatar:     &aa,
+		Avatar:     exec.Avatar,
+		Github:     utils.ExtractString(exec.Github),
+		Bio:        utils.ExtractString(exec.Bio),
+		Location:   utils.ExtractString(exec.Location),
+		Twitter:    utils.ExtractString(exec.Twitter),
+		Site:       utils.ExtractString(exec.Site),
 		Username:   exec.Username,
-		Password:   exec.Password,
-		Cellphone:  exec.Cellphone,
 		TokenUser:  a,
 		Role:       model.Role(exec.Role),
 		Enrollment: slEnroll,
@@ -170,17 +177,21 @@ func (r *UserRepository) GetAll(ctx context.Context) ([]*model.User, error) {
 			})
 
 		}
-
 		user := &model.User{
 			ID:         list.ID,
 			Firstname:  list.Firstname,
 			Lastname:   list.Lastname,
 			Email:      list.Email,
 			Username:   list.Username,
-			Avatar:     &list.Avatar,
+			Avatar:     list.Avatar,
+			Platform:   model.Platform(list.Platform),
+			Github:     utils.ExtractString(list.Github),
+			Bio:        utils.ExtractString(list.Bio),
+			Twitter:    utils.ExtractString(list.Twitter),
+			Site:       utils.ExtractString(list.Site),
+			Location:   utils.ExtractString(list.Location),
 			Role:       model.Role(list.Role),
-			Password:   list.Password,
-			Cellphone:  list.Cellphone,
+			Password:   utils.ExtractString(list.Password),
 			TokenUser:  list.TokenUser,
 			Enrollment: slEnroll,
 		}
@@ -189,4 +200,107 @@ func (r *UserRepository) GetAll(ctx context.Context) ([]*model.User, error) {
 	}
 
 	return allUsers, nil
+}
+
+func (r *UserRepository) CreateUserGITHUB(input model.NewUserGithub, ctx context.Context) (*model.User, error) {
+	exec, err := r.DB.Client.User.CreateOne(
+		prisma.User.Firstname.Set(*input.Firstname),
+		prisma.User.Lastname.Set(*input.Lastname),
+		prisma.User.Username.Set(*input.Username),
+		prisma.User.EmailVerified.Set(false),
+		prisma.User.Avatar.Set(*input.Avatar),
+		prisma.User.Email.Set(*input.Email),
+		prisma.User.TokenUser.Set(""),
+		prisma.User.Platform.Set(prisma.PlatformGITHUB),
+		prisma.User.Site.Set(*input.Site),
+		prisma.User.Bio.Set(*input.Bio),
+		prisma.User.Location.Set(*input.Location),
+		prisma.User.Github.Set(*input.Github),
+		prisma.User.Twitter.Set(*input.Twitter),
+	).Exec(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
+	enrollments := []*model.Enrollment{}
+	for _, enr := range exec.RelationsUser.Enrollment {
+		enrollments = append(enrollments, &model.Enrollment{
+			ID:        enr.ID,
+			UserID:    enr.UserID,
+			CreatedAt: enr.CreatedAt.String(),
+			UpdatedAt: utils.ExtractData(enr.UpdatedAt),
+			CourseID:  enr.CourseID,
+			DeletedAt: utils.ExtractData(enr.DeletedAt),
+		})
+	}
+
+	userData := &model.User{
+		ID:         exec.ID,
+		Firstname:  exec.Firstname,
+		Lastname:   exec.Lastname,
+		Role:       model.Role(exec.Role),
+		Email:      exec.Email,
+		Avatar:     exec.Avatar,
+		Platform:   model.Platform(exec.Platform),
+		Github:     utils.ExtractString(exec.Github),
+		Bio:        utils.ExtractString(exec.Bio),
+		Twitter:    utils.ExtractString(exec.Twitter),
+		Site:       utils.ExtractString(exec.Site),
+		Password:   utils.ExtractString(exec.Password),
+		Username:   exec.Username,
+		Location:   utils.ExtractString(exec.Location),
+		TokenUser:  exec.TokenUser,
+		Enrollment: enrollments,
+	}
+
+	return userData, nil
+}
+
+func (r *UserRepository) CreateUserGOOGLE(input model.NewUserGoogle, ctx context.Context) (*model.User, error) {
+	exec, err := r.DB.Client.User.CreateOne(
+		prisma.User.Firstname.Set(*input.Firstname),
+		prisma.User.Lastname.Set(*input.Lastname),
+		prisma.User.Username.Set(*input.Username),
+		prisma.User.EmailVerified.Set(false),
+		prisma.User.Avatar.Set(*input.Avatar),
+		prisma.User.Email.Set(*input.Email),
+		prisma.User.TokenUser.Set(""),
+		prisma.User.Platform.Set(prisma.PlatformGOOGLE),
+	).Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	enrollments := []*model.Enrollment{}
+	for _, enr := range exec.RelationsUser.Enrollment {
+		enrollments = append(enrollments, &model.Enrollment{
+			ID:        enr.ID,
+			UserID:    enr.UserID,
+			CreatedAt: enr.CreatedAt.String(),
+			UpdatedAt: utils.ExtractData(enr.UpdatedAt),
+			CourseID:  enr.CourseID,
+			DeletedAt: utils.ExtractData(enr.DeletedAt),
+		})
+	}
+
+	userData := &model.User{
+		ID:         exec.ID,
+		Firstname:  exec.Firstname,
+		Lastname:   exec.Lastname,
+		Role:       model.Role(exec.Role),
+		Email:      exec.Email,
+		Avatar:     exec.Avatar,
+		Platform:   model.Platform(exec.Platform),
+		Github:     utils.ExtractString(exec.Github),
+		Bio:        utils.ExtractString(exec.Bio),
+		Twitter:    utils.ExtractString(exec.Twitter),
+		Site:       utils.ExtractString(exec.Site),
+		Password:   utils.ExtractString(exec.Password),
+		Username:   exec.Username,
+		Location:   utils.ExtractString(exec.Location),
+		TokenUser:  exec.TokenUser,
+		Enrollment: enrollments,
+	}
+	return userData, nil
 }
