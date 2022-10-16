@@ -193,14 +193,35 @@ func (r *AuthRepository) GetUserAuthenticated(input *model.GetUserAuthInput, ctx
 	if err != nil {
 		return nil, err
 	}
+
+	enrolls := []*model.Enrollment{}
+
+	for _, enr := range user.RelationsUser.Enrollment {
+		enrolls = append(enrolls, &model.Enrollment{
+			ID:        enr.ID,
+			UserID:    enr.UserID,
+			CreatedAt: enr.CreatedAt.String(),
+			UpdatedAt: utils.ExtractData(enr.UpdatedAt),
+			CourseID:  enr.CourseID,
+			DeletedAt: utils.ExtractData(enr.DeletedAt),
+		})
+
+	}
 	userData := &model.UserAuthenticated{
-		ID:        &user.ID,
-		Firstname: &user.Firstname,
-		Lastname:  &user.Lastname,
-		Email:     &user.Email,
-		Username:  &user.Username,
-		TokenUser: &user.TokenUser,
-		Avatar:    &user.Avatar,
+		ID:         user.ID,
+		Firstname:  user.Firstname,
+		Lastname:   user.Lastname,
+		Email:      user.Email,
+		Avatar:     user.Avatar,
+		Github:     utils.ExtractString(user.Github),
+		Bio:        utils.ExtractString(user.Bio),
+		Location:   utils.ExtractString(user.Location),
+		Twitter:    utils.ExtractString(user.Twitter),
+		Site:       utils.ExtractString(user.Site),
+		Username:   user.Username,
+		TokenUser:  user.TokenUser,
+		Role:       model.Role(user.Role),
+		Enrollment: enrolls,
 	}
 	return userData, nil
 }

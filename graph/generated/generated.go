@@ -129,13 +129,21 @@ type ComplexityRoot struct {
 	}
 
 	UserAuthenticated struct {
-		Avatar    func(childComplexity int) int
-		Email     func(childComplexity int) int
-		Firstname func(childComplexity int) int
-		ID        func(childComplexity int) int
-		Lastname  func(childComplexity int) int
-		TokenUser func(childComplexity int) int
-		Username  func(childComplexity int) int
+		Avatar     func(childComplexity int) int
+		Bio        func(childComplexity int) int
+		Email      func(childComplexity int) int
+		Enrollment func(childComplexity int) int
+		Firstname  func(childComplexity int) int
+		Github     func(childComplexity int) int
+		ID         func(childComplexity int) int
+		Lastname   func(childComplexity int) int
+		Location   func(childComplexity int) int
+		Platform   func(childComplexity int) int
+		Role       func(childComplexity int) int
+		Site       func(childComplexity int) int
+		TokenUser  func(childComplexity int) int
+		Twitter    func(childComplexity int) int
+		Username   func(childComplexity int) int
 	}
 }
 
@@ -666,6 +674,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.UserAuthenticated.Avatar(childComplexity), true
 
+	case "UserAuthenticated.bio":
+		if e.complexity.UserAuthenticated.Bio == nil {
+			break
+		}
+
+		return e.complexity.UserAuthenticated.Bio(childComplexity), true
+
 	case "UserAuthenticated.email":
 		if e.complexity.UserAuthenticated.Email == nil {
 			break
@@ -673,12 +688,26 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.UserAuthenticated.Email(childComplexity), true
 
+	case "UserAuthenticated.enrollment":
+		if e.complexity.UserAuthenticated.Enrollment == nil {
+			break
+		}
+
+		return e.complexity.UserAuthenticated.Enrollment(childComplexity), true
+
 	case "UserAuthenticated.firstname":
 		if e.complexity.UserAuthenticated.Firstname == nil {
 			break
 		}
 
 		return e.complexity.UserAuthenticated.Firstname(childComplexity), true
+
+	case "UserAuthenticated.github":
+		if e.complexity.UserAuthenticated.Github == nil {
+			break
+		}
+
+		return e.complexity.UserAuthenticated.Github(childComplexity), true
 
 	case "UserAuthenticated.id":
 		if e.complexity.UserAuthenticated.ID == nil {
@@ -694,12 +723,47 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.UserAuthenticated.Lastname(childComplexity), true
 
+	case "UserAuthenticated.location":
+		if e.complexity.UserAuthenticated.Location == nil {
+			break
+		}
+
+		return e.complexity.UserAuthenticated.Location(childComplexity), true
+
+	case "UserAuthenticated.platform":
+		if e.complexity.UserAuthenticated.Platform == nil {
+			break
+		}
+
+		return e.complexity.UserAuthenticated.Platform(childComplexity), true
+
+	case "UserAuthenticated.role":
+		if e.complexity.UserAuthenticated.Role == nil {
+			break
+		}
+
+		return e.complexity.UserAuthenticated.Role(childComplexity), true
+
+	case "UserAuthenticated.site":
+		if e.complexity.UserAuthenticated.Site == nil {
+			break
+		}
+
+		return e.complexity.UserAuthenticated.Site(childComplexity), true
+
 	case "UserAuthenticated.token_user":
 		if e.complexity.UserAuthenticated.TokenUser == nil {
 			break
 		}
 
 		return e.complexity.UserAuthenticated.TokenUser(childComplexity), true
+
+	case "UserAuthenticated.twitter":
+		if e.complexity.UserAuthenticated.Twitter == nil {
+			break
+		}
+
+		return e.complexity.UserAuthenticated.Twitter(childComplexity), true
 
 	case "UserAuthenticated.username":
 		if e.complexity.UserAuthenticated.Username == nil {
@@ -934,13 +998,21 @@ input NewLesson {
 }
 
 type UserAuthenticated {
-  id: String
-  firstname: String
-  lastname: String
-  username: String
-  email: String
-  avatar: String
-  token_user: String
+   id: String!
+  firstname: String!
+  lastname: String!
+  role: Role!
+  email: String!
+  avatar: String!
+  platform: Platform!
+  github: String!
+  bio: String!
+  location: String!
+  twitter: String!
+  site: String!
+  username: String!
+  token_user: String!
+  enrollment: [Enrollment!]!
 }
 
 input AuthenticationInput{
@@ -3339,14 +3411,30 @@ func (ec *executionContext) fieldContext_Query_userAuthenticated(ctx context.Con
 				return ec.fieldContext_UserAuthenticated_firstname(ctx, field)
 			case "lastname":
 				return ec.fieldContext_UserAuthenticated_lastname(ctx, field)
-			case "username":
-				return ec.fieldContext_UserAuthenticated_username(ctx, field)
+			case "role":
+				return ec.fieldContext_UserAuthenticated_role(ctx, field)
 			case "email":
 				return ec.fieldContext_UserAuthenticated_email(ctx, field)
 			case "avatar":
 				return ec.fieldContext_UserAuthenticated_avatar(ctx, field)
+			case "platform":
+				return ec.fieldContext_UserAuthenticated_platform(ctx, field)
+			case "github":
+				return ec.fieldContext_UserAuthenticated_github(ctx, field)
+			case "bio":
+				return ec.fieldContext_UserAuthenticated_bio(ctx, field)
+			case "location":
+				return ec.fieldContext_UserAuthenticated_location(ctx, field)
+			case "twitter":
+				return ec.fieldContext_UserAuthenticated_twitter(ctx, field)
+			case "site":
+				return ec.fieldContext_UserAuthenticated_site(ctx, field)
+			case "username":
+				return ec.fieldContext_UserAuthenticated_username(ctx, field)
 			case "token_user":
 				return ec.fieldContext_UserAuthenticated_token_user(ctx, field)
+			case "enrollment":
+				return ec.fieldContext_UserAuthenticated_enrollment(ctx, field)
 			}
 			return nil, fmt.Errorf("no field named %q was found under type UserAuthenticated", field.Name)
 		},
@@ -4602,11 +4690,14 @@ func (ec *executionContext) _UserAuthenticated_id(ctx context.Context, field gra
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_UserAuthenticated_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4643,11 +4734,14 @@ func (ec *executionContext) _UserAuthenticated_firstname(ctx context.Context, fi
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_UserAuthenticated_firstname(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4684,11 +4778,14 @@ func (ec *executionContext) _UserAuthenticated_lastname(ctx context.Context, fie
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_UserAuthenticated_lastname(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4704,8 +4801,8 @@ func (ec *executionContext) fieldContext_UserAuthenticated_lastname(ctx context.
 	return fc, nil
 }
 
-func (ec *executionContext) _UserAuthenticated_username(ctx context.Context, field graphql.CollectedField, obj *model.UserAuthenticated) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_UserAuthenticated_username(ctx, field)
+func (ec *executionContext) _UserAuthenticated_role(ctx context.Context, field graphql.CollectedField, obj *model.UserAuthenticated) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAuthenticated_role(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -4718,28 +4815,31 @@ func (ec *executionContext) _UserAuthenticated_username(ctx context.Context, fie
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return obj.Username, nil
+		return obj.Role, nil
 	})
 	if err != nil {
 		ec.Error(ctx, err)
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(model.Role)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNRole2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐRole(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_UserAuthenticated_username(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_UserAuthenticated_role(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "UserAuthenticated",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type String does not have child fields")
+			return nil, errors.New("field of type Role does not have child fields")
 		},
 	}
 	return fc, nil
@@ -4766,11 +4866,14 @@ func (ec *executionContext) _UserAuthenticated_email(ctx context.Context, field 
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_UserAuthenticated_email(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4807,14 +4910,325 @@ func (ec *executionContext) _UserAuthenticated_avatar(ctx context.Context, field
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_UserAuthenticated_avatar(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAuthenticated",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAuthenticated_platform(ctx context.Context, field graphql.CollectedField, obj *model.UserAuthenticated) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAuthenticated_platform(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Platform, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(model.Platform)
+	fc.Result = res
+	return ec.marshalNPlatform2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐPlatform(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAuthenticated_platform(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAuthenticated",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Platform does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAuthenticated_github(ctx context.Context, field graphql.CollectedField, obj *model.UserAuthenticated) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAuthenticated_github(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Github, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAuthenticated_github(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAuthenticated",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAuthenticated_bio(ctx context.Context, field graphql.CollectedField, obj *model.UserAuthenticated) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAuthenticated_bio(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Bio, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAuthenticated_bio(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAuthenticated",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAuthenticated_location(ctx context.Context, field graphql.CollectedField, obj *model.UserAuthenticated) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAuthenticated_location(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Location, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAuthenticated_location(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAuthenticated",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAuthenticated_twitter(ctx context.Context, field graphql.CollectedField, obj *model.UserAuthenticated) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAuthenticated_twitter(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Twitter, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAuthenticated_twitter(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAuthenticated",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAuthenticated_site(ctx context.Context, field graphql.CollectedField, obj *model.UserAuthenticated) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAuthenticated_site(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Site, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAuthenticated_site(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAuthenticated",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAuthenticated_username(ctx context.Context, field graphql.CollectedField, obj *model.UserAuthenticated) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAuthenticated_username(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Username, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAuthenticated_username(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "UserAuthenticated",
 		Field:      field,
@@ -4848,11 +5262,14 @@ func (ec *executionContext) _UserAuthenticated_token_user(ctx context.Context, f
 		return graphql.Null
 	}
 	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
 		return graphql.Null
 	}
-	res := resTmp.(*string)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_UserAuthenticated_token_user(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4863,6 +5280,64 @@ func (ec *executionContext) fieldContext_UserAuthenticated_token_user(ctx contex
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAuthenticated_enrollment(ctx context.Context, field graphql.CollectedField, obj *model.UserAuthenticated) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAuthenticated_enrollment(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Enrollment, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Enrollment)
+	fc.Result = res
+	return ec.marshalNEnrollment2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐEnrollmentᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAuthenticated_enrollment(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAuthenticated",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Enrollment_id(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Enrollment_created_at(ctx, field)
+			case "updated_at":
+				return ec.fieldContext_Enrollment_updated_at(ctx, field)
+			case "deleted_at":
+				return ec.fieldContext_Enrollment_deleted_at(ctx, field)
+			case "userId":
+				return ec.fieldContext_Enrollment_userId(ctx, field)
+			case "courseId":
+				return ec.fieldContext_Enrollment_courseId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Enrollment", field.Name)
 		},
 	}
 	return fc, nil
@@ -7908,30 +8383,107 @@ func (ec *executionContext) _UserAuthenticated(ctx context.Context, sel ast.Sele
 
 			out.Values[i] = ec._UserAuthenticated_id(ctx, field, obj)
 
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "firstname":
 
 			out.Values[i] = ec._UserAuthenticated_firstname(ctx, field, obj)
 
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "lastname":
 
 			out.Values[i] = ec._UserAuthenticated_lastname(ctx, field, obj)
 
-		case "username":
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "role":
 
-			out.Values[i] = ec._UserAuthenticated_username(ctx, field, obj)
+			out.Values[i] = ec._UserAuthenticated_role(ctx, field, obj)
 
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "email":
 
 			out.Values[i] = ec._UserAuthenticated_email(ctx, field, obj)
 
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "avatar":
 
 			out.Values[i] = ec._UserAuthenticated_avatar(ctx, field, obj)
 
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "platform":
+
+			out.Values[i] = ec._UserAuthenticated_platform(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "github":
+
+			out.Values[i] = ec._UserAuthenticated_github(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "bio":
+
+			out.Values[i] = ec._UserAuthenticated_bio(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "location":
+
+			out.Values[i] = ec._UserAuthenticated_location(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "twitter":
+
+			out.Values[i] = ec._UserAuthenticated_twitter(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "site":
+
+			out.Values[i] = ec._UserAuthenticated_site(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "username":
+
+			out.Values[i] = ec._UserAuthenticated_username(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "token_user":
 
 			out.Values[i] = ec._UserAuthenticated_token_user(ctx, field, obj)
 
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "enrollment":
+
+			out.Values[i] = ec._UserAuthenticated_enrollment(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		default:
 			panic("unknown field " + strconv.Quote(field.Name))
 		}

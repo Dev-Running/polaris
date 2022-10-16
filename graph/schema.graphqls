@@ -147,13 +147,21 @@ input NewLesson {
 }
 
 type UserAuthenticated {
-  id: String
-  firstname: String
-  lastname: String
-  username: String
-  email: String
-  avatar: String
-  token_user: String
+   id: String!
+  firstname: String!
+  lastname: String!
+  role: Role!
+  email: String!
+  avatar: String!
+  platform: Platform!
+  github: String!
+  bio: String!
+  location: String!
+  twitter: String!
+  site: String!
+  username: String!
+  token_user: String!
+  enrollment: [Enrollment!]!
 }
 
 input AuthenticationInput{

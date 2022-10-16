@@ -145,13 +145,21 @@ type User struct {
 }
 
 type UserAuthenticated struct {
-	ID        *string `json:"id"`
-	Firstname *string `json:"firstname"`
-	Lastname  *string `json:"lastname"`
-	Username  *string `json:"username"`
-	Email     *string `json:"email"`
-	Avatar    *string `json:"avatar"`
-	TokenUser *string `json:"token_user"`
+	ID         string        `json:"id"`
+	Firstname  string        `json:"firstname"`
+	Lastname   string        `json:"lastname"`
+	Role       Role          `json:"role"`
+	Email      string        `json:"email"`
+	Avatar     string        `json:"avatar"`
+	Platform   Platform      `json:"platform"`
+	Github     string        `json:"github"`
+	Bio        string        `json:"bio"`
+	Location   string        `json:"location"`
+	Twitter    string        `json:"twitter"`
+	Site       string        `json:"site"`
+	Username   string        `json:"username"`
+	TokenUser  string        `json:"token_user"`
+	Enrollment []*Enrollment `json:"enrollment"`
 }
 
 type Platform string
