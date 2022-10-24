@@ -21,6 +21,7 @@ type IUserRepository interface {
 	CreateUserGITHUB(input model.NewUserGithub, ctx context.Context) (*model.User, error)
 	CreateUserGOOGLE(input model.NewUserGoogle, ctx context.Context) (*model.User, error)
 	GetAll(ctx context.Context) ([]*model.User, error)
+	GetUserByID(id string, ctx context.Context) (*model.User, error)
 }
 
 type UserRepository struct {
@@ -302,5 +303,32 @@ func (r *UserRepository) CreateUserGOOGLE(input model.NewUserGoogle, ctx context
 		TokenUser:  exec.TokenUser,
 		Enrollment: enrollments,
 	}
+	return userData, nil
+}
+
+func (r *UserRepository) GetUserByID(id string, ctx context.Context) (*model.User, error) {
+	exec, err := r.DB.Client.User.FindUnique(prisma.User.ID.Equals(id)).Exec(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	userData := &model.User{
+		ID:         exec.ID,
+		Firstname:  exec.Firstname,
+		Lastname:   exec.Lastname,
+		Role:       model.Role(exec.Role),
+		Email:      exec.Email,
+		Avatar:     exec.Avatar,
+		Platform:   model.Platform(exec.Platform),
+		Github:     utils.ExtractString(exec.Github),
+		Bio:        utils.ExtractString(exec.Bio),
+		Twitter:    utils.ExtractString(exec.Twitter),
+		Site:       utils.ExtractString(exec.Site),
+		Username:   exec.Username,
+		Location:   utils.ExtractString(exec.Location),
+		TokenUser:  exec.TokenUser,
+		Enrollment: nil,
+	}
+
 	return userData, nil
 }

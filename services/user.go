@@ -13,6 +13,7 @@ type IUserService interface {
 	CreateUserGITHUB(input model.NewUserGithub, ctx context.Context) (*model.User, error)
 	CreateUserGOOGLE(input model.NewUserGoogle, ctx context.Context) (*model.User, error)
 	GetAll(ctx context.Context) ([]*model.User, error)
+	GetUserByID(id string, ctx context.Context) (*model.User, error)
 }
 
 type UserService struct {
@@ -43,4 +44,8 @@ func (r *UserService) CreateUserGITHUB(input model.NewUserGithub, ctx context.Co
 
 func (r *UserService) CreateUserGOOGLE(input model.NewUserGoogle, ctx context.Context) (*model.User, error) {
 	return r.UserRepository.CreateUserGOOGLE(input, ctx)
+}
+
+func (r *UserService) GetUserByID(id string, ctx context.Context) (*model.User, error) {
+	return r.UserRepository.GetUserByID(id, ctx)
 }

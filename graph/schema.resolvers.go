@@ -149,6 +149,16 @@ func (r *queryResolver) UserAuthenticated(ctx context.Context, input *model.GetU
 	return userAuthenticated, nil
 }
 
+// GetUserByID is the resolver for the getUserByID field.
+func (r *queryResolver) GetUserByID(ctx context.Context, id string) (*model.User, error) {
+	userData, err := r.UserService.GetUserByID(id, ctx)
+	if err != nil {
+		return nil, fmt.Errorf("Erro de conexão com o banco de dados")
+	}
+
+	return userData, nil
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 

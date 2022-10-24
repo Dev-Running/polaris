@@ -180,12 +180,13 @@ type Query {
   lessons: [Lesson]
   enrollments: [Enrollment!]!
   userAuthenticated(input: GetUserAuthInput): UserAuthenticated!
+  getUserByID(id: String!): User!
 }
 
 
 
 type Mutation {
-
+  
   authentication(input:AuthenticationInput): User!
   createUser(input: NewUser): User!
   createUserGITHUB(input: NewUserGITHUB): User!
