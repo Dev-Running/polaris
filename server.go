@@ -35,6 +35,7 @@ func main() {
 		UserService:       services.NewUserService(repositories.NewUserRepository(connect)),
 		EnrollmentService: services.NewEnrollmentService(repositories.NewEnrollmentRepository(connect)),
 		AuthService:       services.NewAuthService(repositories.NewAuthRepository(connect)),
+		MessageService:    services.NewMessageService(repositories.NewMessageRepository(connect)),
 	}}))
 	http.Handle("/static/", http.StripPrefix("/static/", cors.AllowAll().Handler(http.FileServer(http.Dir("./assets")))))
 	http.Handle("/", cors.AllowAll().Handler(playground.Handler("GraphQL playground", "/graphql")))

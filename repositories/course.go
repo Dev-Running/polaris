@@ -12,7 +12,7 @@ import (
 
 type ICourseRepository interface {
 	Create(input model.NewCourse, ctx context.Context) (*model.Course, error)
-	GetAl(ctx context.Context) ([]*model.Course, error)
+	GetAll(ctx context.Context) ([]*model.Course, error)
 }
 
 type CourseRepository struct {

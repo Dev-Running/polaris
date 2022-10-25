@@ -235,7 +235,21 @@ func (r *UserRepository) CreateUserGITHUB(input model.NewUserGithub, ctx context
 			DeletedAt: utils.ExtractData(enr.DeletedAt),
 		})
 	}
+	messages := []*model.Messages{}
 
+	for _, enr := range exec.RelationsUser.Messages {
+		messages = append(messages, &model.Messages{
+			ID:        enr.ID,
+			Message:   enr.Message,
+			From:      enr.From,
+			To:        enr.To,
+			CreatedAt: enr.CreatedAt.String(),
+			User:      nil,
+			UserID:    nil,
+		})
+
+	}
+	sid := utils.ExtractString(exec.SocketID)
 	userData := &model.User{
 		ID:         exec.ID,
 		Firstname:  exec.Firstname,
@@ -253,6 +267,8 @@ func (r *UserRepository) CreateUserGITHUB(input model.NewUserGithub, ctx context
 		Location:   utils.ExtractString(exec.Location),
 		TokenUser:  exec.TokenUser,
 		Enrollment: enrollments,
+		Messages:   messages,
+		SocketID:   &sid,
 	}
 
 	return userData, nil
@@ -312,6 +328,34 @@ func (r *UserRepository) GetUserByID(id string, ctx context.Context) (*model.Use
 		return nil, err
 	}
 
+	messages := []*model.Messages{}
+
+	for _, enr := range exec.RelationsUser.Messages {
+		messages = append(messages, &model.Messages{
+			ID:        enr.ID,
+			Message:   enr.Message,
+			From:      enr.From,
+			To:        enr.To,
+			CreatedAt: enr.CreatedAt.String(),
+			User:      nil,
+			UserID:    nil,
+		})
+
+	}
+
+	enrollments := []*model.Enrollment{}
+	for _, enr := range exec.RelationsUser.Enrollment {
+		enrollments = append(enrollments, &model.Enrollment{
+			ID:        enr.ID,
+			UserID:    enr.UserID,
+			CreatedAt: enr.CreatedAt.String(),
+			UpdatedAt: utils.ExtractData(enr.UpdatedAt),
+			CourseID:  enr.CourseID,
+			DeletedAt: utils.ExtractData(enr.DeletedAt),
+		})
+	}
+
+	sid := utils.ExtractString(exec.SocketID)
 	userData := &model.User{
 		ID:         exec.ID,
 		Firstname:  exec.Firstname,
@@ -324,10 +368,13 @@ func (r *UserRepository) GetUserByID(id string, ctx context.Context) (*model.Use
 		Bio:        utils.ExtractString(exec.Bio),
 		Twitter:    utils.ExtractString(exec.Twitter),
 		Site:       utils.ExtractString(exec.Site),
+		Password:   utils.ExtractString(exec.Password),
 		Username:   exec.Username,
 		Location:   utils.ExtractString(exec.Location),
 		TokenUser:  exec.TokenUser,
-		Enrollment: nil,
+		Enrollment: enrollments,
+		Messages:   messages,
+		SocketID:   &sid,
 	}
 
 	return userData, nil

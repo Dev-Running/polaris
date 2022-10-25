@@ -11,6 +11,16 @@ import (
 	"github.com/laurentino14/user/graph/model"
 )
 
+// CreateMessage is the resolver for the createMessage field.
+func (r *mutationResolver) CreateMessage(ctx context.Context, input *model.NewMessage) (*model.Messages, error) {
+	messageData, err := r.MessageService.Create(*input, ctx)
+	if err != nil {
+		return nil, fmt.Errorf("Erro de conexão com o banco de dados")
+	}
+
+	return messageData, nil
+}
+
 // Authentication is the resolver for the authentication field.
 func (r *mutationResolver) Authentication(ctx context.Context, input *model.AuthenticationInput) (*model.User, error) {
 	authData, err := r.AuthService.Auth(input, ctx)
@@ -138,6 +148,15 @@ func (r *queryResolver) Enrollments(ctx context.Context) ([]*model.Enrollment, e
 	}
 
 	return enrollmentsData, nil
+}
+
+// GetMessages is the resolver for the getMessages field.
+func (r *queryResolver) GetMessages(ctx context.Context, from *string, to *string) ([]*model.Messages, error) {
+	messages, err := r.MessageService.GetMessages(*from, *to, ctx)
+	if err != nil {
+		return nil, err
+	}
+	return messages, nil
 }
 
 // UserAuthenticated is the resolver for the userAuthenticated field.

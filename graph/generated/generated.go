@@ -78,11 +78,22 @@ type ComplexityRoot struct {
 		UpdatedAt   func(childComplexity int) int
 	}
 
+	Messages struct {
+		CreatedAt func(childComplexity int) int
+		From      func(childComplexity int) int
+		ID        func(childComplexity int) int
+		Message   func(childComplexity int) int
+		To        func(childComplexity int) int
+		User      func(childComplexity int) int
+		UserID    func(childComplexity int) int
+	}
+
 	Mutation struct {
 		Authentication   func(childComplexity int, input *model.AuthenticationInput) int
 		CreateCourse     func(childComplexity int, input model.NewCourse) int
 		CreateEnrollment func(childComplexity int, input model.NewEnrollment) int
 		CreateLesson     func(childComplexity int, input model.NewLesson) int
+		CreateMessage    func(childComplexity int, input *model.NewMessage) int
 		CreateStep       func(childComplexity int, input model.NewStep) int
 		CreateUser       func(childComplexity int, input *model.NewUser) int
 		CreateUserGithub func(childComplexity int, input *model.NewUserGithub) int
@@ -92,6 +103,7 @@ type ComplexityRoot struct {
 	Query struct {
 		Courses           func(childComplexity int) int
 		Enrollments       func(childComplexity int) int
+		GetMessages       func(childComplexity int, from *string, to *string) int
 		GetUserByID       func(childComplexity int, id string) int
 		Lessons           func(childComplexity int) int
 		Steps             func(childComplexity int) int
@@ -120,10 +132,12 @@ type ComplexityRoot struct {
 		ID         func(childComplexity int) int
 		Lastname   func(childComplexity int) int
 		Location   func(childComplexity int) int
+		Messages   func(childComplexity int) int
 		Password   func(childComplexity int) int
 		Platform   func(childComplexity int) int
 		Role       func(childComplexity int) int
 		Site       func(childComplexity int) int
+		SocketID   func(childComplexity int) int
 		TokenUser  func(childComplexity int) int
 		Twitter    func(childComplexity int) int
 		Username   func(childComplexity int) int
@@ -139,9 +153,11 @@ type ComplexityRoot struct {
 		ID         func(childComplexity int) int
 		Lastname   func(childComplexity int) int
 		Location   func(childComplexity int) int
+		Messages   func(childComplexity int) int
 		Platform   func(childComplexity int) int
 		Role       func(childComplexity int) int
 		Site       func(childComplexity int) int
+		SocketID   func(childComplexity int) int
 		TokenUser  func(childComplexity int) int
 		Twitter    func(childComplexity int) int
 		Username   func(childComplexity int) int
@@ -149,6 +165,7 @@ type ComplexityRoot struct {
 }
 
 type MutationResolver interface {
+	CreateMessage(ctx context.Context, input *model.NewMessage) (*model.Messages, error)
 	Authentication(ctx context.Context, input *model.AuthenticationInput) (*model.User, error)
 	CreateUser(ctx context.Context, input *model.NewUser) (*model.User, error)
 	CreateUserGithub(ctx context.Context, input *model.NewUserGithub) (*model.User, error)
@@ -164,6 +181,7 @@ type QueryResolver interface {
 	Steps(ctx context.Context) ([]*model.Step, error)
 	Lessons(ctx context.Context) ([]*model.Lesson, error)
 	Enrollments(ctx context.Context) ([]*model.Enrollment, error)
+	GetMessages(ctx context.Context, from *string, to *string) ([]*model.Messages, error)
 	UserAuthenticated(ctx context.Context, input *model.GetUserAuthInput) (*model.UserAuthenticated, error)
 	GetUserByID(ctx context.Context, id string) (*model.User, error)
 }
@@ -358,6 +376,55 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Lesson.UpdatedAt(childComplexity), true
 
+	case "Messages.created_at":
+		if e.complexity.Messages.CreatedAt == nil {
+			break
+		}
+
+		return e.complexity.Messages.CreatedAt(childComplexity), true
+
+	case "Messages.from":
+		if e.complexity.Messages.From == nil {
+			break
+		}
+
+		return e.complexity.Messages.From(childComplexity), true
+
+	case "Messages.id":
+		if e.complexity.Messages.ID == nil {
+			break
+		}
+
+		return e.complexity.Messages.ID(childComplexity), true
+
+	case "Messages.message":
+		if e.complexity.Messages.Message == nil {
+			break
+		}
+
+		return e.complexity.Messages.Message(childComplexity), true
+
+	case "Messages.to":
+		if e.complexity.Messages.To == nil {
+			break
+		}
+
+		return e.complexity.Messages.To(childComplexity), true
+
+	case "Messages.User":
+		if e.complexity.Messages.User == nil {
+			break
+		}
+
+		return e.complexity.Messages.User(childComplexity), true
+
+	case "Messages.userId":
+		if e.complexity.Messages.UserID == nil {
+			break
+		}
+
+		return e.complexity.Messages.UserID(childComplexity), true
+
 	case "Mutation.authentication":
 		if e.complexity.Mutation.Authentication == nil {
 			break
@@ -405,6 +472,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateLesson(childComplexity, args["input"].(model.NewLesson)), true
+
+	case "Mutation.createMessage":
+		if e.complexity.Mutation.CreateMessage == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_createMessage_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.CreateMessage(childComplexity, args["input"].(*model.NewMessage)), true
 
 	case "Mutation.createStep":
 		if e.complexity.Mutation.CreateStep == nil {
@@ -467,6 +546,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Query.Enrollments(childComplexity), true
+
+	case "Query.getMessages":
+		if e.complexity.Query.GetMessages == nil {
+			break
+		}
+
+		args, err := ec.field_Query_getMessages_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Query.GetMessages(childComplexity, args["from"].(*string), args["to"].(*string)), true
 
 	case "Query.getUserByID":
 		if e.complexity.Query.GetUserByID == nil {
@@ -632,6 +723,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.User.Location(childComplexity), true
 
+	case "User.messages":
+		if e.complexity.User.Messages == nil {
+			break
+		}
+
+		return e.complexity.User.Messages(childComplexity), true
+
 	case "User.password":
 		if e.complexity.User.Password == nil {
 			break
@@ -659,6 +757,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.User.Site(childComplexity), true
+
+	case "User.socketID":
+		if e.complexity.User.SocketID == nil {
+			break
+		}
+
+		return e.complexity.User.SocketID(childComplexity), true
 
 	case "User.token_user":
 		if e.complexity.User.TokenUser == nil {
@@ -744,6 +849,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.UserAuthenticated.Location(childComplexity), true
 
+	case "UserAuthenticated.messages":
+		if e.complexity.UserAuthenticated.Messages == nil {
+			break
+		}
+
+		return e.complexity.UserAuthenticated.Messages(childComplexity), true
+
 	case "UserAuthenticated.platform":
 		if e.complexity.UserAuthenticated.Platform == nil {
 			break
@@ -764,6 +876,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.UserAuthenticated.Site(childComplexity), true
+
+	case "UserAuthenticated.socketID":
+		if e.complexity.UserAuthenticated.SocketID == nil {
+			break
+		}
+
+		return e.complexity.UserAuthenticated.SocketID(childComplexity), true
 
 	case "UserAuthenticated.token_user":
 		if e.complexity.UserAuthenticated.TokenUser == nil {
@@ -799,6 +918,7 @@ func (e *executableSchema) Exec(ctx context.Context) graphql.ResponseHandler {
 		ec.unmarshalInputNewCourse,
 		ec.unmarshalInputNewEnrollment,
 		ec.unmarshalInputNewLesson,
+		ec.unmarshalInputNewMessage,
 		ec.unmarshalInputNewStep,
 		ec.unmarshalInputNewUser,
 		ec.unmarshalInputNewUserGITHUB,
@@ -892,6 +1012,8 @@ type User {
   platform: Platform!
   github: String!
   bio: String!
+  socketID: String
+  messages: [Messages!]!
   location: String!
   twitter: String!
   site: String!
@@ -900,6 +1022,17 @@ type User {
   token_user: String!
   enrollment: [Enrollment!]!
 }
+
+type Messages {
+   id:String!
+  message:String!
+  from:String!
+  to:String!
+  created_at:Date!
+  User:       User    
+  userId:     String
+}
+
 
 
 input NewUser{
@@ -1026,7 +1159,16 @@ type UserAuthenticated {
   site: String!
   username: String!
   token_user: String!
+  socketID: String
+  messages: [Messages!]!
   enrollment: [Enrollment!]!
+}
+
+
+input NewMessage{
+  message:String!
+  from:String!
+  to:String!
 }
 
 input AuthenticationInput{
@@ -1044,6 +1186,7 @@ type Query {
   steps: [Step]
   lessons: [Lesson]
   enrollments: [Enrollment!]!
+  getMessages(from:String, to:String): [Messages!]!
   userAuthenticated(input: GetUserAuthInput): UserAuthenticated!
   getUserByID(id: String!): User!
 }
@@ -1051,7 +1194,7 @@ type Query {
 
 
 type Mutation {
-  
+  createMessage(input: NewMessage): Messages!
   authentication(input:AuthenticationInput): User!
   createUser(input: NewUser): User!
   createUserGITHUB(input: NewUserGITHUB): User!
@@ -1121,6 +1264,21 @@ func (ec *executionContext) field_Mutation_createLesson_args(ctx context.Context
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalNNewLesson2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewLesson(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["input"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createMessage_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *model.NewMessage
+	if tmp, ok := rawArgs["input"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
+		arg0, err = ec.unmarshalONewMessage2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewMessage(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -1201,6 +1359,30 @@ func (ec *executionContext) field_Query___type_args(ctx context.Context, rawArgs
 		}
 	}
 	args["name"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Query_getMessages_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 *string
+	if tmp, ok := rawArgs["from"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("from"))
+		arg0, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["from"] = arg0
+	var arg1 *string
+	if tmp, ok := rawArgs["to"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("to"))
+		arg1, err = ec.unmarshalOString2ᚖstring(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["to"] = arg1
 	return args, nil
 }
 
@@ -2424,6 +2606,417 @@ func (ec *executionContext) fieldContext_Lesson_courseId(ctx context.Context, fi
 	return fc, nil
 }
 
+func (ec *executionContext) _Messages_id(ctx context.Context, field graphql.CollectedField, obj *model.Messages) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Messages_id(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.ID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Messages_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Messages",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Messages_message(ctx context.Context, field graphql.CollectedField, obj *model.Messages) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Messages_message(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Message, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Messages_message(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Messages",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Messages_from(ctx context.Context, field graphql.CollectedField, obj *model.Messages) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Messages_from(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.From, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Messages_from(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Messages",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Messages_to(ctx context.Context, field graphql.CollectedField, obj *model.Messages) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Messages_to(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.To, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Messages_to(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Messages",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Messages_created_at(ctx context.Context, field graphql.CollectedField, obj *model.Messages) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Messages_created_at(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.CreatedAt, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNDate2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Messages_created_at(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Messages",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Date does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Messages_User(ctx context.Context, field graphql.CollectedField, obj *model.Messages) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Messages_User(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.User, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*model.User)
+	fc.Result = res
+	return ec.marshalOUser2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐUser(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Messages_User(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Messages",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_User_id(ctx, field)
+			case "firstname":
+				return ec.fieldContext_User_firstname(ctx, field)
+			case "lastname":
+				return ec.fieldContext_User_lastname(ctx, field)
+			case "role":
+				return ec.fieldContext_User_role(ctx, field)
+			case "email":
+				return ec.fieldContext_User_email(ctx, field)
+			case "avatar":
+				return ec.fieldContext_User_avatar(ctx, field)
+			case "platform":
+				return ec.fieldContext_User_platform(ctx, field)
+			case "github":
+				return ec.fieldContext_User_github(ctx, field)
+			case "bio":
+				return ec.fieldContext_User_bio(ctx, field)
+			case "socketID":
+				return ec.fieldContext_User_socketID(ctx, field)
+			case "messages":
+				return ec.fieldContext_User_messages(ctx, field)
+			case "location":
+				return ec.fieldContext_User_location(ctx, field)
+			case "twitter":
+				return ec.fieldContext_User_twitter(ctx, field)
+			case "site":
+				return ec.fieldContext_User_site(ctx, field)
+			case "username":
+				return ec.fieldContext_User_username(ctx, field)
+			case "password":
+				return ec.fieldContext_User_password(ctx, field)
+			case "token_user":
+				return ec.fieldContext_User_token_user(ctx, field)
+			case "enrollment":
+				return ec.fieldContext_User_enrollment(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type User", field.Name)
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Messages_userId(ctx context.Context, field graphql.CollectedField, obj *model.Messages) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Messages_userId(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.UserID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Messages_userId(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Messages",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createMessage(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createMessage(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateMessage(rctx, fc.Args["input"].(*model.NewMessage))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Messages)
+	fc.Result = res
+	return ec.marshalNMessages2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐMessages(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createMessage(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Messages_id(ctx, field)
+			case "message":
+				return ec.fieldContext_Messages_message(ctx, field)
+			case "from":
+				return ec.fieldContext_Messages_from(ctx, field)
+			case "to":
+				return ec.fieldContext_Messages_to(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Messages_created_at(ctx, field)
+			case "User":
+				return ec.fieldContext_Messages_User(ctx, field)
+			case "userId":
+				return ec.fieldContext_Messages_userId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Messages", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createMessage_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_authentication(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_authentication(ctx, field)
 	if err != nil {
@@ -2481,6 +3074,10 @@ func (ec *executionContext) fieldContext_Mutation_authentication(ctx context.Con
 				return ec.fieldContext_User_github(ctx, field)
 			case "bio":
 				return ec.fieldContext_User_bio(ctx, field)
+			case "socketID":
+				return ec.fieldContext_User_socketID(ctx, field)
+			case "messages":
+				return ec.fieldContext_User_messages(ctx, field)
 			case "location":
 				return ec.fieldContext_User_location(ctx, field)
 			case "twitter":
@@ -2570,6 +3167,10 @@ func (ec *executionContext) fieldContext_Mutation_createUser(ctx context.Context
 				return ec.fieldContext_User_github(ctx, field)
 			case "bio":
 				return ec.fieldContext_User_bio(ctx, field)
+			case "socketID":
+				return ec.fieldContext_User_socketID(ctx, field)
+			case "messages":
+				return ec.fieldContext_User_messages(ctx, field)
 			case "location":
 				return ec.fieldContext_User_location(ctx, field)
 			case "twitter":
@@ -2659,6 +3260,10 @@ func (ec *executionContext) fieldContext_Mutation_createUserGITHUB(ctx context.C
 				return ec.fieldContext_User_github(ctx, field)
 			case "bio":
 				return ec.fieldContext_User_bio(ctx, field)
+			case "socketID":
+				return ec.fieldContext_User_socketID(ctx, field)
+			case "messages":
+				return ec.fieldContext_User_messages(ctx, field)
 			case "location":
 				return ec.fieldContext_User_location(ctx, field)
 			case "twitter":
@@ -2748,6 +3353,10 @@ func (ec *executionContext) fieldContext_Mutation_createUserGOOGLE(ctx context.C
 				return ec.fieldContext_User_github(ctx, field)
 			case "bio":
 				return ec.fieldContext_User_bio(ctx, field)
+			case "socketID":
+				return ec.fieldContext_User_socketID(ctx, field)
+			case "messages":
+				return ec.fieldContext_User_messages(ctx, field)
 			case "location":
 				return ec.fieldContext_User_location(ctx, field)
 			case "twitter":
@@ -3131,6 +3740,10 @@ func (ec *executionContext) fieldContext_Query_users(ctx context.Context, field 
 				return ec.fieldContext_User_github(ctx, field)
 			case "bio":
 				return ec.fieldContext_User_bio(ctx, field)
+			case "socketID":
+				return ec.fieldContext_User_socketID(ctx, field)
+			case "messages":
+				return ec.fieldContext_User_messages(ctx, field)
 			case "location":
 				return ec.fieldContext_User_location(ctx, field)
 			case "twitter":
@@ -3396,6 +4009,77 @@ func (ec *executionContext) fieldContext_Query_enrollments(ctx context.Context, 
 	return fc, nil
 }
 
+func (ec *executionContext) _Query_getMessages(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Query_getMessages(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Query().GetMessages(rctx, fc.Args["from"].(*string), fc.Args["to"].(*string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Messages)
+	fc.Result = res
+	return ec.marshalNMessages2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐMessagesᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Query_getMessages(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Query",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Messages_id(ctx, field)
+			case "message":
+				return ec.fieldContext_Messages_message(ctx, field)
+			case "from":
+				return ec.fieldContext_Messages_from(ctx, field)
+			case "to":
+				return ec.fieldContext_Messages_to(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Messages_created_at(ctx, field)
+			case "User":
+				return ec.fieldContext_Messages_User(ctx, field)
+			case "userId":
+				return ec.fieldContext_Messages_userId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Messages", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Query_getMessages_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Query_userAuthenticated(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Query_userAuthenticated(ctx, field)
 	if err != nil {
@@ -3463,6 +4147,10 @@ func (ec *executionContext) fieldContext_Query_userAuthenticated(ctx context.Con
 				return ec.fieldContext_UserAuthenticated_username(ctx, field)
 			case "token_user":
 				return ec.fieldContext_UserAuthenticated_token_user(ctx, field)
+			case "socketID":
+				return ec.fieldContext_UserAuthenticated_socketID(ctx, field)
+			case "messages":
+				return ec.fieldContext_UserAuthenticated_messages(ctx, field)
 			case "enrollment":
 				return ec.fieldContext_UserAuthenticated_enrollment(ctx, field)
 			}
@@ -3540,6 +4228,10 @@ func (ec *executionContext) fieldContext_Query_getUserByID(ctx context.Context, 
 				return ec.fieldContext_User_github(ctx, field)
 			case "bio":
 				return ec.fieldContext_User_bio(ctx, field)
+			case "socketID":
+				return ec.fieldContext_User_socketID(ctx, field)
+			case "messages":
+				return ec.fieldContext_User_messages(ctx, field)
 			case "location":
 				return ec.fieldContext_User_location(ctx, field)
 			case "twitter":
@@ -4461,6 +5153,107 @@ func (ec *executionContext) fieldContext_User_bio(ctx context.Context, field gra
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_socketID(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_socketID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SocketID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_socketID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_messages(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_messages(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Messages, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Messages)
+	fc.Result = res
+	return ec.marshalNMessages2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐMessagesᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_messages(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Messages_id(ctx, field)
+			case "message":
+				return ec.fieldContext_Messages_message(ctx, field)
+			case "from":
+				return ec.fieldContext_Messages_from(ctx, field)
+			case "to":
+				return ec.fieldContext_Messages_to(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Messages_created_at(ctx, field)
+			case "User":
+				return ec.fieldContext_Messages_User(ctx, field)
+			case "userId":
+				return ec.fieldContext_Messages_userId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Messages", field.Name)
 		},
 	}
 	return fc, nil
@@ -5399,6 +6192,107 @@ func (ec *executionContext) fieldContext_UserAuthenticated_token_user(ctx contex
 		IsResolver: false,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAuthenticated_socketID(ctx context.Context, field graphql.CollectedField, obj *model.UserAuthenticated) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAuthenticated_socketID(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.SocketID, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		return graphql.Null
+	}
+	res := resTmp.(*string)
+	fc.Result = res
+	return ec.marshalOString2ᚖstring(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAuthenticated_socketID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAuthenticated",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _UserAuthenticated_messages(ctx context.Context, field graphql.CollectedField, obj *model.UserAuthenticated) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_UserAuthenticated_messages(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.Messages, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.([]*model.Messages)
+	fc.Result = res
+	return ec.marshalNMessages2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐMessagesᚄ(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_UserAuthenticated_messages(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "UserAuthenticated",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Messages_id(ctx, field)
+			case "message":
+				return ec.fieldContext_Messages_message(ctx, field)
+			case "from":
+				return ec.fieldContext_Messages_from(ctx, field)
+			case "to":
+				return ec.fieldContext_Messages_to(ctx, field)
+			case "created_at":
+				return ec.fieldContext_Messages_created_at(ctx, field)
+			case "User":
+				return ec.fieldContext_Messages_User(ctx, field)
+			case "userId":
+				return ec.fieldContext_Messages_userId(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Messages", field.Name)
 		},
 	}
 	return fc, nil
@@ -7479,6 +8373,50 @@ func (ec *executionContext) unmarshalInputNewLesson(ctx context.Context, obj int
 	return it, nil
 }
 
+func (ec *executionContext) unmarshalInputNewMessage(ctx context.Context, obj interface{}) (model.NewMessage, error) {
+	var it model.NewMessage
+	asMap := map[string]interface{}{}
+	for k, v := range obj.(map[string]interface{}) {
+		asMap[k] = v
+	}
+
+	fieldsInOrder := [...]string{"message", "from", "to"}
+	for _, k := range fieldsInOrder {
+		v, ok := asMap[k]
+		if !ok {
+			continue
+		}
+		switch k {
+		case "message":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("message"))
+			it.Message, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "from":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("from"))
+			it.From, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "to":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("to"))
+			it.To, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		}
+	}
+
+	return it, nil
+}
+
 func (ec *executionContext) unmarshalInputNewStep(ctx context.Context, obj interface{}) (model.NewStep, error) {
 	var it model.NewStep
 	asMap := map[string]interface{}{}
@@ -8005,6 +8943,70 @@ func (ec *executionContext) _Lesson(ctx context.Context, sel ast.SelectionSet, o
 	return out
 }
 
+var messagesImplementors = []string{"Messages"}
+
+func (ec *executionContext) _Messages(ctx context.Context, sel ast.SelectionSet, obj *model.Messages) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, messagesImplementors)
+	out := graphql.NewFieldSet(fields)
+	var invalids uint32
+	for i, field := range fields {
+		switch field.Name {
+		case "__typename":
+			out.Values[i] = graphql.MarshalString("Messages")
+		case "id":
+
+			out.Values[i] = ec._Messages_id(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "message":
+
+			out.Values[i] = ec._Messages_message(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "from":
+
+			out.Values[i] = ec._Messages_from(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "to":
+
+			out.Values[i] = ec._Messages_to(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "created_at":
+
+			out.Values[i] = ec._Messages_created_at(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "User":
+
+			out.Values[i] = ec._Messages_User(ctx, field, obj)
+
+		case "userId":
+
+			out.Values[i] = ec._Messages_userId(ctx, field, obj)
+
+		default:
+			panic("unknown field " + strconv.Quote(field.Name))
+		}
+	}
+	out.Dispatch()
+	if invalids > 0 {
+		return graphql.Null
+	}
+	return out
+}
+
 var mutationImplementors = []string{"Mutation"}
 
 func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet) graphql.Marshaler {
@@ -8024,6 +9026,15 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 		switch field.Name {
 		case "__typename":
 			out.Values[i] = graphql.MarshalString("Mutation")
+		case "createMessage":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createMessage(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "authentication":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -8222,6 +9233,29 @@ func (ec *executionContext) _Query(ctx context.Context, sel ast.SelectionSet) gr
 					}
 				}()
 				res = ec._Query_enrollments(ctx, field)
+				if res == graphql.Null {
+					atomic.AddUint32(&invalids, 1)
+				}
+				return res
+			}
+
+			rrm := func(ctx context.Context) graphql.Marshaler {
+				return ec.OperationContext.RootResolverMiddleware(ctx, innerFunc)
+			}
+
+			out.Concurrently(i, func() graphql.Marshaler {
+				return rrm(innerCtx)
+			})
+		case "getMessages":
+			field := field
+
+			innerFunc := func(ctx context.Context) (res graphql.Marshaler) {
+				defer func() {
+					if r := recover(); r != nil {
+						ec.Error(ctx, ec.Recover(ctx, r))
+					}
+				}()
+				res = ec._Query_getMessages(ctx, field)
 				if res == graphql.Null {
 					atomic.AddUint32(&invalids, 1)
 				}
@@ -8451,6 +9485,17 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "socketID":
+
+			out.Values[i] = ec._User_socketID(ctx, field, obj)
+
+		case "messages":
+
+			out.Values[i] = ec._User_messages(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "location":
 
 			out.Values[i] = ec._User_location(ctx, field, obj)
@@ -8615,6 +9660,17 @@ func (ec *executionContext) _UserAuthenticated(ctx context.Context, sel ast.Sele
 		case "token_user":
 
 			out.Values[i] = ec._UserAuthenticated_token_user(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "socketID":
+
+			out.Values[i] = ec._UserAuthenticated_socketID(ctx, field, obj)
+
+		case "messages":
+
+			out.Values[i] = ec._UserAuthenticated_messages(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -9157,6 +10213,64 @@ func (ec *executionContext) marshalNLesson2ᚖgithubᚗcomᚋlaurentino14ᚋuser
 		return graphql.Null
 	}
 	return ec._Lesson(ctx, sel, v)
+}
+
+func (ec *executionContext) marshalNMessages2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐMessages(ctx context.Context, sel ast.SelectionSet, v model.Messages) graphql.Marshaler {
+	return ec._Messages(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNMessages2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐMessagesᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Messages) graphql.Marshaler {
+	ret := make(graphql.Array, len(v))
+	var wg sync.WaitGroup
+	isLen1 := len(v) == 1
+	if !isLen1 {
+		wg.Add(len(v))
+	}
+	for i := range v {
+		i := i
+		fc := &graphql.FieldContext{
+			Index:  &i,
+			Result: &v[i],
+		}
+		ctx := graphql.WithFieldContext(ctx, fc)
+		f := func(i int) {
+			defer func() {
+				if r := recover(); r != nil {
+					ec.Error(ctx, ec.Recover(ctx, r))
+					ret = nil
+				}
+			}()
+			if !isLen1 {
+				defer wg.Done()
+			}
+			ret[i] = ec.marshalNMessages2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐMessages(ctx, sel, v[i])
+		}
+		if isLen1 {
+			f(i)
+		} else {
+			go f(i)
+		}
+
+	}
+	wg.Wait()
+
+	for _, e := range ret {
+		if e == graphql.Null {
+			return graphql.Null
+		}
+	}
+
+	return ret
+}
+
+func (ec *executionContext) marshalNMessages2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐMessages(ctx context.Context, sel ast.SelectionSet, v *model.Messages) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Messages(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNNewCourse2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewCourse(ctx context.Context, v interface{}) (model.NewCourse, error) {
@@ -9703,6 +10817,14 @@ func (ec *executionContext) marshalOLesson2ᚖgithubᚗcomᚋlaurentino14ᚋuser
 	return ec._Lesson(ctx, sel, v)
 }
 
+func (ec *executionContext) unmarshalONewMessage2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewMessage(ctx context.Context, v interface{}) (*model.NewMessage, error) {
+	if v == nil {
+		return nil, nil
+	}
+	res, err := ec.unmarshalInputNewMessage(ctx, v)
+	return &res, graphql.ErrorOnPath(ctx, err)
+}
+
 func (ec *executionContext) unmarshalONewUser2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewUser(ctx context.Context, v interface{}) (*model.NewUser, error) {
 	if v == nil {
 		return nil, nil
@@ -9805,6 +10927,13 @@ func (ec *executionContext) marshalOUpload2ᚖgithubᚗcomᚋ99designsᚋgqlgen�
 	}
 	res := graphql.MarshalUpload(*v)
 	return res
+}
+
+func (ec *executionContext) marshalOUser2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐUser(ctx context.Context, sel ast.SelectionSet, v *model.User) graphql.Marshaler {
+	if v == nil {
+		return graphql.Null
+	}
+	return ec._User(ctx, sel, v)
 }
 
 func (ec *executionContext) marshalO__EnumValue2ᚕgithubᚗcomᚋ99designsᚋgqlgenᚋgraphqlᚋintrospectionᚐEnumValueᚄ(ctx context.Context, sel ast.SelectionSet, v []introspection.EnumValue) graphql.Marshaler {

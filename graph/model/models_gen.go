@@ -54,6 +54,16 @@ type Lesson struct {
 	CourseID    string `json:"courseId"`
 }
 
+type Messages struct {
+	ID        string  `json:"id"`
+	Message   string  `json:"message"`
+	From      string  `json:"from"`
+	To        string  `json:"to"`
+	CreatedAt string  `json:"created_at"`
+	User      *User   `json:"User"`
+	UserID    *string `json:"userId"`
+}
+
 type NewCourse struct {
 	Title       *string `json:"title"`
 	Slug        *string `json:"slug"`
@@ -75,6 +85,12 @@ type NewLesson struct {
 	Link        *string `json:"link"`
 	StepID      *string `json:"stepId"`
 	CourseID    *string `json:"courseId"`
+}
+
+type NewMessage struct {
+	Message string `json:"message"`
+	From    string `json:"from"`
+	To      string `json:"to"`
 }
 
 type NewStep struct {
@@ -135,6 +151,8 @@ type User struct {
 	Platform   Platform      `json:"platform"`
 	Github     string        `json:"github"`
 	Bio        string        `json:"bio"`
+	SocketID   *string       `json:"socketID"`
+	Messages   []*Messages   `json:"messages"`
 	Location   string        `json:"location"`
 	Twitter    string        `json:"twitter"`
 	Site       string        `json:"site"`
@@ -159,6 +177,8 @@ type UserAuthenticated struct {
 	Site       string        `json:"site"`
 	Username   string        `json:"username"`
 	TokenUser  string        `json:"token_user"`
+	SocketID   *string       `json:"socketID"`
+	Messages   []*Messages   `json:"messages"`
 	Enrollment []*Enrollment `json:"enrollment"`
 }
 

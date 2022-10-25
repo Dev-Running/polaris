@@ -19,4 +19,5 @@ type Resolver struct {
 	CourseService     services.ICourseService
 	StepService       services.IStepService
 	LessonService     services.ILessonService
+	MessageService    services.IMessageService
 }

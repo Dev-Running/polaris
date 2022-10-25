@@ -27,6 +27,8 @@ type User {
   platform: Platform!
   github: String!
   bio: String!
+  socketID: String
+  messages: [Messages!]!
   location: String!
   twitter: String!
   site: String!
@@ -35,6 +37,17 @@ type User {
   token_user: String!
   enrollment: [Enrollment!]!
 }
+
+type Messages {
+   id:String!
+  message:String!
+  from:String!
+  to:String!
+  created_at:Date!
+  User:       User    
+  userId:     String
+}
+
 
 
 input NewUser{
@@ -161,7 +174,16 @@ type UserAuthenticated {
   site: String!
   username: String!
   token_user: String!
+  socketID: String
+  messages: [Messages!]!
   enrollment: [Enrollment!]!
+}
+
+
+input NewMessage{
+  message:String!
+  from:String!
+  to:String!
 }
 
 input AuthenticationInput{
@@ -179,6 +201,7 @@ type Query {
   steps: [Step]
   lessons: [Lesson]
   enrollments: [Enrollment!]!
+  getMessages(from:String, to:String): [Messages!]!
   userAuthenticated(input: GetUserAuthInput): UserAuthenticated!
   getUserByID(id: String!): User!
 }
@@ -186,7 +209,7 @@ type Query {
 
 
 type Mutation {
-  
+  createMessage(input: NewMessage): Messages!
   authentication(input:AuthenticationInput): User!
   createUser(input: NewUser): User!
   createUserGITHUB(input: NewUserGITHUB): User!
