@@ -60,36 +60,6 @@ func (r *mutationResolver) CreateUserGoogle(ctx context.Context, input *model.Ne
 	return user, nil
 }
 
-// CreateCourse is the resolver for the createCourse field.
-func (r *mutationResolver) CreateCourse(ctx context.Context, input model.NewCourse) (*model.Course, error) {
-	courseData, err := r.CourseService.Create(input, ctx)
-	if err != nil {
-		return nil, fmt.Errorf("Este curso já existe!")
-	}
-
-	return courseData, err
-}
-
-// CreateStep is the resolver for the createStep field.
-func (r *mutationResolver) CreateStep(ctx context.Context, input model.NewStep) (*model.Step, error) {
-	stepData, err := r.StepService.Create(input, ctx)
-	if err != nil {
-		return nil, err
-	}
-
-	return stepData, err
-}
-
-// CreateLesson is the resolver for the createLesson field.
-func (r *mutationResolver) CreateLesson(ctx context.Context, input model.NewLesson) (*model.Lesson, error) {
-	lessonData, err := r.LessonService.Create(input, ctx)
-	if lessonData == nil {
-		return nil, err
-	}
-
-	return lessonData, err
-}
-
 // CreateEnrollment is the resolver for the createEnrollment field.
 func (r *mutationResolver) CreateEnrollment(ctx context.Context, input model.NewEnrollment) (*model.Enrollment, error) {
 	enrollmentsData, err := r.EnrollmentService.Create(input, ctx)
@@ -186,3 +156,34 @@ func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//   - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//     it when you're done.
+//   - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *mutationResolver) CreateCourse(ctx context.Context, input model.NewCourse) (*model.Course, error) {
+	courseData, err := r.CourseService.Create(input, ctx)
+	if err != nil {
+		return nil, fmt.Errorf("Este curso já existe!")
+	}
+
+	return courseData, err
+}
+func (r *mutationResolver) CreateStep(ctx context.Context, input model.NewStep) (*model.Step, error) {
+	stepData, err := r.StepService.Create(input, ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return stepData, err
+}
+func (r *mutationResolver) CreateLesson(ctx context.Context, input model.NewLesson) (*model.Lesson, error) {
+	lessonData, err := r.LessonService.Create(input, ctx)
+	if lessonData == nil {
+		return nil, err
+	}
+
+	return lessonData, err
+}

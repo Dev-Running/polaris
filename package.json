@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon -L --exec go run server.go --signal SIGUSR2",
+    "dev": "nodemon -L --exec go run ./server.go --signal SIGUSR2",
     "migrate": "go run github.com/prisma/prisma-client-go migrate dev",
     "gql-get": "go get github.com/99designs/gqlgen",
     "gql-gen": "go run github.com/99designs/gqlgen generate"

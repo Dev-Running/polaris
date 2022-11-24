@@ -29,6 +29,7 @@ type UserRepository struct {
 }
 
 func NewUserRepository(db *connect.DB) *UserRepository {
+
 	return &UserRepository{DB: db}
 }
 func (r *UserRepository) Avatar(i model.NewUser, imageType string) string {

@@ -4,6 +4,8 @@ go 1.19
 
 replace github.com/laurentino14/user/prisma => ./prisma
 
+replace github.com/laurentino14/user/kafka => ./kafka
+
 require (
 	github.com/99designs/gqlgen v0.17.20
 	github.com/disintegration/imaging v1.6.2
@@ -20,9 +22,13 @@ require (
 
 require (
 	github.com/agnivade/levenshtein v1.1.1 // indirect
+	github.com/confluentinc/confluent-kafka-go v1.9.2 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/hashicorp/golang-lru v0.5.4 // indirect
+	github.com/klauspost/compress v1.15.9 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
+	github.com/pierrec/lz4/v4 v4.1.15 // indirect
 	github.com/rogpeppe/go-internal v1.9.0 // indirect
+	github.com/segmentio/kafka-go v0.4.38 // indirect
 	golang.org/x/image v0.0.0-20191009234506-e7c1f5e7dbb8 // indirect
 )

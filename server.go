@@ -28,6 +28,9 @@ func main() {
 		port = defaultPort
 	}
 
+	//KAFKA
+
+	//KAFKA
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
 		LessonService:     services.NewLessonService(repositories.NewLessonRepository(connect)),
 		CourseService:     services.NewCourseService(repositories.NewCourseRepository(connect)),

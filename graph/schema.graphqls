@@ -214,8 +214,5 @@ type Mutation {
   createUser(input: NewUser): User!
   createUserGITHUB(input: NewUserGITHUB): User!
   createUserGOOGLE(input: NewUserGOOGLE): User!
-  createCourse(input: NewCourse!): Course!
-  createStep(input: NewStep!): Step!
-  createLesson(input: NewLesson!): Lesson!
   createEnrollment(input: NewEnrollment!): Enrollment!
 }

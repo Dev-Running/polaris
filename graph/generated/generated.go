@@ -90,11 +90,8 @@ type ComplexityRoot struct {
 
 	Mutation struct {
 		Authentication   func(childComplexity int, input *model.AuthenticationInput) int
-		CreateCourse     func(childComplexity int, input model.NewCourse) int
 		CreateEnrollment func(childComplexity int, input model.NewEnrollment) int
-		CreateLesson     func(childComplexity int, input model.NewLesson) int
 		CreateMessage    func(childComplexity int, input *model.NewMessage) int
-		CreateStep       func(childComplexity int, input model.NewStep) int
 		CreateUser       func(childComplexity int, input *model.NewUser) int
 		CreateUserGithub func(childComplexity int, input *model.NewUserGithub) int
 		CreateUserGoogle func(childComplexity int, input *model.NewUserGoogle) int
@@ -170,9 +167,6 @@ type MutationResolver interface {
 	CreateUser(ctx context.Context, input *model.NewUser) (*model.User, error)
 	CreateUserGithub(ctx context.Context, input *model.NewUserGithub) (*model.User, error)
 	CreateUserGoogle(ctx context.Context, input *model.NewUserGoogle) (*model.User, error)
-	CreateCourse(ctx context.Context, input model.NewCourse) (*model.Course, error)
-	CreateStep(ctx context.Context, input model.NewStep) (*model.Step, error)
-	CreateLesson(ctx context.Context, input model.NewLesson) (*model.Lesson, error)
 	CreateEnrollment(ctx context.Context, input model.NewEnrollment) (*model.Enrollment, error)
 }
 type QueryResolver interface {
@@ -437,18 +431,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.Authentication(childComplexity, args["input"].(*model.AuthenticationInput)), true
 
-	case "Mutation.createCourse":
-		if e.complexity.Mutation.CreateCourse == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_createCourse_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.CreateCourse(childComplexity, args["input"].(model.NewCourse)), true
-
 	case "Mutation.createEnrollment":
 		if e.complexity.Mutation.CreateEnrollment == nil {
 			break
@@ -461,18 +443,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.CreateEnrollment(childComplexity, args["input"].(model.NewEnrollment)), true
 
-	case "Mutation.createLesson":
-		if e.complexity.Mutation.CreateLesson == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_createLesson_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.CreateLesson(childComplexity, args["input"].(model.NewLesson)), true
-
 	case "Mutation.createMessage":
 		if e.complexity.Mutation.CreateMessage == nil {
 			break
@@ -484,18 +454,6 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.CreateMessage(childComplexity, args["input"].(*model.NewMessage)), true
-
-	case "Mutation.createStep":
-		if e.complexity.Mutation.CreateStep == nil {
-			break
-		}
-
-		args, err := ec.field_Mutation_createStep_args(context.TODO(), rawArgs)
-		if err != nil {
-			return 0, false
-		}
-
-		return e.complexity.Mutation.CreateStep(childComplexity, args["input"].(model.NewStep)), true
 
 	case "Mutation.createUser":
 		if e.complexity.Mutation.CreateUser == nil {
@@ -1199,9 +1157,6 @@ type Mutation {
   createUser(input: NewUser): User!
   createUserGITHUB(input: NewUserGITHUB): User!
   createUserGOOGLE(input: NewUserGOOGLE): User!
-  createCourse(input: NewCourse!): Course!
-  createStep(input: NewStep!): Step!
-  createLesson(input: NewLesson!): Lesson!
   createEnrollment(input: NewEnrollment!): Enrollment!
 }
 `, BuiltIn: false},
@@ -1227,21 +1182,6 @@ func (ec *executionContext) field_Mutation_authentication_args(ctx context.Conte
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_createCourse_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.NewCourse
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewCourse2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewCourse(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
 func (ec *executionContext) field_Mutation_createEnrollment_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1257,21 +1197,6 @@ func (ec *executionContext) field_Mutation_createEnrollment_args(ctx context.Con
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_createLesson_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.NewLesson
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewLesson2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewLesson(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
 func (ec *executionContext) field_Mutation_createMessage_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
@@ -1279,21 +1204,6 @@ func (ec *executionContext) field_Mutation_createMessage_args(ctx context.Contex
 	if tmp, ok := rawArgs["input"]; ok {
 		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
 		arg0, err = ec.unmarshalONewMessage2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewMessage(ctx, tmp)
-		if err != nil {
-			return nil, err
-		}
-	}
-	args["input"] = arg0
-	return args, nil
-}
-
-func (ec *executionContext) field_Mutation_createStep_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
-	var err error
-	args := map[string]interface{}{}
-	var arg0 model.NewStep
-	if tmp, ok := rawArgs["input"]; ok {
-		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("input"))
-		arg0, err = ec.unmarshalNNewStep2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewStep(ctx, tmp)
 		if err != nil {
 			return nil, err
 		}
@@ -3383,231 +3293,6 @@ func (ec *executionContext) fieldContext_Mutation_createUserGOOGLE(ctx context.C
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_createUserGOOGLE_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_createCourse(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_createCourse(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateCourse(rctx, fc.Args["input"].(model.NewCourse))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.Course)
-	fc.Result = res
-	return ec.marshalNCourse2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐCourse(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_createCourse(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Course_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Course_title(ctx, field)
-			case "slug":
-				return ec.fieldContext_Course_slug(ctx, field)
-			case "description":
-				return ec.fieldContext_Course_description(ctx, field)
-			case "image":
-				return ec.fieldContext_Course_image(ctx, field)
-			case "created_at":
-				return ec.fieldContext_Course_created_at(ctx, field)
-			case "updated_at":
-				return ec.fieldContext_Course_updated_at(ctx, field)
-			case "lessons":
-				return ec.fieldContext_Course_lessons(ctx, field)
-			case "steps":
-				return ec.fieldContext_Course_steps(ctx, field)
-			case "enrollments":
-				return ec.fieldContext_Course_enrollments(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Course", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_createCourse_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_createStep(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_createStep(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateStep(rctx, fc.Args["input"].(model.NewStep))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.Step)
-	fc.Result = res
-	return ec.marshalNStep2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐStep(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_createStep(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Step_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Step_title(ctx, field)
-			case "description":
-				return ec.fieldContext_Step_description(ctx, field)
-			case "slug":
-				return ec.fieldContext_Step_slug(ctx, field)
-			case "created_at":
-				return ec.fieldContext_Step_created_at(ctx, field)
-			case "updated_at":
-				return ec.fieldContext_Step_updated_at(ctx, field)
-			case "lessons":
-				return ec.fieldContext_Step_lessons(ctx, field)
-			case "courseId":
-				return ec.fieldContext_Step_courseId(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Step", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_createStep_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
-		ec.Error(ctx, err)
-		return
-	}
-	return fc, nil
-}
-
-func (ec *executionContext) _Mutation_createLesson(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_createLesson(ctx, field)
-	if err != nil {
-		return graphql.Null
-	}
-	ctx = graphql.WithFieldContext(ctx, fc)
-	defer func() {
-		if r := recover(); r != nil {
-			ec.Error(ctx, ec.Recover(ctx, r))
-			ret = graphql.Null
-		}
-	}()
-	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
-		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateLesson(rctx, fc.Args["input"].(model.NewLesson))
-	})
-	if err != nil {
-		ec.Error(ctx, err)
-		return graphql.Null
-	}
-	if resTmp == nil {
-		if !graphql.HasFieldError(ctx, fc) {
-			ec.Errorf(ctx, "must not be null")
-		}
-		return graphql.Null
-	}
-	res := resTmp.(*model.Lesson)
-	fc.Result = res
-	return ec.marshalNLesson2ᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐLesson(ctx, field.Selections, res)
-}
-
-func (ec *executionContext) fieldContext_Mutation_createLesson(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
-	fc = &graphql.FieldContext{
-		Object:     "Mutation",
-		Field:      field,
-		IsMethod:   true,
-		IsResolver: true,
-		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_Lesson_id(ctx, field)
-			case "title":
-				return ec.fieldContext_Lesson_title(ctx, field)
-			case "description":
-				return ec.fieldContext_Lesson_description(ctx, field)
-			case "slug":
-				return ec.fieldContext_Lesson_slug(ctx, field)
-			case "link":
-				return ec.fieldContext_Lesson_link(ctx, field)
-			case "created_at":
-				return ec.fieldContext_Lesson_created_at(ctx, field)
-			case "updated_at":
-				return ec.fieldContext_Lesson_updated_at(ctx, field)
-			case "stepId":
-				return ec.fieldContext_Lesson_stepId(ctx, field)
-			case "courseId":
-				return ec.fieldContext_Lesson_courseId(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type Lesson", field.Name)
-		},
-	}
-	defer func() {
-		if r := recover(); r != nil {
-			err = ec.Recover(ctx, r)
-			ec.Error(ctx, err)
-		}
-	}()
-	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_createLesson_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -9071,33 +8756,6 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "createCourse":
-
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_createCourse(ctx, field)
-			})
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "createStep":
-
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_createStep(ctx, field)
-			})
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
-		case "createLesson":
-
-			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_createLesson(ctx, field)
-			})
-
-			if out.Values[i] == graphql.Null {
-				invalids++
-			}
 		case "createEnrollment":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -10026,10 +9684,6 @@ func (ec *executionContext) marshalNBoolean2bool(ctx context.Context, sel ast.Se
 	return res
 }
 
-func (ec *executionContext) marshalNCourse2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐCourse(ctx context.Context, sel ast.SelectionSet, v model.Course) graphql.Marshaler {
-	return ec._Course(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalNCourse2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐCourseᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Course) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -10157,10 +9811,6 @@ func (ec *executionContext) marshalNEnrollment2ᚖgithubᚗcomᚋlaurentino14ᚋ
 	return ec._Enrollment(ctx, sel, v)
 }
 
-func (ec *executionContext) marshalNLesson2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐLesson(ctx context.Context, sel ast.SelectionSet, v model.Lesson) graphql.Marshaler {
-	return ec._Lesson(ctx, sel, &v)
-}
-
 func (ec *executionContext) marshalNLesson2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐLessonᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Lesson) graphql.Marshaler {
 	ret := make(graphql.Array, len(v))
 	var wg sync.WaitGroup
@@ -10273,23 +9923,8 @@ func (ec *executionContext) marshalNMessages2ᚖgithubᚗcomᚋlaurentino14ᚋus
 	return ec._Messages(ctx, sel, v)
 }
 
-func (ec *executionContext) unmarshalNNewCourse2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewCourse(ctx context.Context, v interface{}) (model.NewCourse, error) {
-	res, err := ec.unmarshalInputNewCourse(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
 func (ec *executionContext) unmarshalNNewEnrollment2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewEnrollment(ctx context.Context, v interface{}) (model.NewEnrollment, error) {
 	res, err := ec.unmarshalInputNewEnrollment(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalNNewLesson2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewLesson(ctx context.Context, v interface{}) (model.NewLesson, error) {
-	res, err := ec.unmarshalInputNewLesson(ctx, v)
-	return res, graphql.ErrorOnPath(ctx, err)
-}
-
-func (ec *executionContext) unmarshalNNewStep2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐNewStep(ctx context.Context, v interface{}) (model.NewStep, error) {
-	res, err := ec.unmarshalInputNewStep(ctx, v)
 	return res, graphql.ErrorOnPath(ctx, err)
 }
 
@@ -10311,10 +9946,6 @@ func (ec *executionContext) unmarshalNRole2githubᚗcomᚋlaurentino14ᚋuserᚋ
 
 func (ec *executionContext) marshalNRole2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐRole(ctx context.Context, sel ast.SelectionSet, v model.Role) graphql.Marshaler {
 	return v
-}
-
-func (ec *executionContext) marshalNStep2githubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐStep(ctx context.Context, sel ast.SelectionSet, v model.Step) graphql.Marshaler {
-	return ec._Step(ctx, sel, &v)
 }
 
 func (ec *executionContext) marshalNStep2ᚕᚖgithubᚗcomᚋlaurentino14ᚋuserᚋgraphᚋmodelᚐStepᚄ(ctx context.Context, sel ast.SelectionSet, v []*model.Step) graphql.Marshaler {

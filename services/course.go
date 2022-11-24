@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+
 	"github.com/laurentino14/user/graph/model"
 	"github.com/laurentino14/user/repositories"
 )
