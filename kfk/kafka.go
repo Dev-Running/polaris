@@ -13,8 +13,20 @@ import (
 )
 
 type Message struct {
-	Type string
-	Ok   string
+	TypeMessage string ``
+}
+
+type MessageNewCourse struct {
+	TypeMessage string    `json:"typeMessage"`
+	Message     NewCourse `json:"message"`
+}
+
+type NewCourse struct {
+	Title       string `json:"title"`
+	Slug        string `json:"slug"`
+	Description string `json:"description"`
+	Image       string `json:"image"`
+	ID          string `json:"id"`
 }
 
 func KafkaRun(c *kafka.Consumer, run bool, connect *connect.DB, ctx context.Context) {
@@ -26,28 +38,34 @@ func KafkaRun(c *kafka.Consumer, run bool, connect *connect.DB, ctx context.Cont
 			// Errors are informational and automatically handled by the consumer
 			continue
 		}
-		var dados Message
-		erro := json.Unmarshal(ev.Value, &dados)
+		var msg Message
+		erro := json.Unmarshal(ev.Value, &msg)
 		if erro != nil {
 			log.Println(erro)
 		}
 
-		if dados.Type == "create" {
+		if msg.TypeMessage == "newCourse" {
+			var newCourse MessageNewCourse
+			json.Unmarshal(ev.Value, &newCourse)
+
 			a, err := connect.Client.Course.CreateOne(
-				prisma.Course.Title.Set("123"),
-				prisma.Course.Slug.Set(""),
-				prisma.Course.Description.Set(""),
-				prisma.Course.Image.Set(""),
+				prisma.Course.Title.Set(newCourse.Message.Title),
+				prisma.Course.Slug.Set(newCourse.Message.Slug),
+				prisma.Course.Description.Set(newCourse.Message.Description),
+				prisma.Course.Image.Set(newCourse.Message.Image),
 				prisma.Course.CreatedAt.Set(time.Now()),
 				prisma.Course.UpdatedAt.Set(time.Now()),
+				prisma.Course.ID.Set(newCourse.Message.ID),
 			).Exec(ctx)
 			if err != nil {
 				log.Println(err)
 			}
-
-			fmt.Println(a)
+			fmt.Println(a.ID)
+			// var a NewCourse
+			// errojson.Unmarshal(dados.message, &a)
+			// fmt.Println(a)
 		}
-		if dados.Type == "update" {
+		if msg.TypeMessage == "update" {
 			fmt.Println("e pra dar update")
 		}
 
