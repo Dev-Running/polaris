@@ -65,7 +65,7 @@ func KafkaRun(c *kafka.Consumer, run bool, connect *connect.DB, ctx context.Cont
 			// errojson.Unmarshal(dados.message, &a)
 			// fmt.Println(a)
 		}
-		if msg.TypeMessage == "update" {
+		if msg.TypeMessage == "updateModule" {
 			fmt.Println("e pra dar update")
 		}
 
