@@ -10,8 +10,10 @@ import (
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/laurentino14/user/graph"
 	"github.com/laurentino14/user/graph/generated"
+	"github.com/laurentino14/user/kfk"
 	"github.com/laurentino14/user/prisma/connect"
 	"github.com/laurentino14/user/repositories"
 	"github.com/laurentino14/user/services"
@@ -29,10 +31,23 @@ func main() {
 	}
 
 	//KAFKA
+	KC, err := kafka.NewConsumer(&kafka.ConfigMap{"bootstrap.servers": "localhost:9091,localhost:9092,localhost:9093",
+		"group.id":          "polaris",
+		"auto.offset.reset": "earliest"})
+	if err != nil {
+		log.Fatal(err)
+	}
 
+	erro := KC.SubscribeTopics([]string{"polaris"}, nil)
+	if erro != nil {
+		log.Fatal(erro)
+	}
+
+	go kfk.KafkaRun(KC, true, connect, context.Background())
 	//KAFKA
+
 	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
-		LessonService:     services.NewLessonService(repositories.NewLessonRepository(connect)),
+		LessonService:     services.NewLessonService(repositories.NewLessonRepository(connect), KC),
 		CourseService:     services.NewCourseService(repositories.NewCourseRepository(connect)),
 		StepService:       services.NewStepService(repositories.NewStepRepository(connect)),
 		UserService:       services.NewUserService(repositories.NewUserRepository(connect)),

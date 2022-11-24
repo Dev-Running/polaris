@@ -7,7 +7,9 @@ import (
 	"os"
 	"path"
 	"strings"
+	"time"
 
+	"github.com/confluentinc/confluent-kafka-go/kafka"
 	"github.com/disintegration/imaging"
 	"github.com/laurentino14/user/graph/model"
 	"github.com/laurentino14/user/prisma"
@@ -26,6 +28,23 @@ type IUserRepository interface {
 
 type UserRepository struct {
 	DB *connect.DB
+}
+
+func RunKAFKA(c *kafka.Consumer, run bool) {
+	for run {
+		select {
+
+		default:
+			ev, err := c.ReadMessage(100 * time.Millisecond)
+			if err != nil {
+				// Errors are informational and automatically handled by the consumer
+				continue
+			}
+			fmt.Printf("Consumed event from topic %s: key = %-10s value = %s\n",
+				*ev.TopicPartition.Topic, string(ev.Key), string(ev.Value))
+		}
+	}
+	c.Close()
 }
 
 func NewUserRepository(db *connect.DB) *UserRepository {
