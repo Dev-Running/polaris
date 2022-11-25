@@ -28,6 +28,32 @@ type NewCourse struct {
 	Image       string `json:"image"`
 	ID          string `json:"id"`
 }
+type NewModule struct {
+	ID          string `json:"id"`
+	Title       string `json:"title"`
+	Slug        string `json:"slug"`
+	Description string `json:"description"`
+	CourseID    string `json:"courseID"`
+}
+
+type MessageNewModule struct {
+	TypeMessage string    `json:"typeMessage"`
+	Message     NewModule `json:"message"`
+}
+
+type NewLesson struct {
+	Title       string `json:"title"`
+	Slug        string `json:"slug"`
+	Description string `json:"description"`
+	Link        string `json:"link"`
+	ModuleID    string `json:"moduleID"`
+	CourseID    string `json:"courseID"`
+	ID          string `json:"id"`
+}
+type MessageNewLesson struct {
+	TypeMessage string    `json:"typeMessage"`
+	Message     NewLesson `json:"message"`
+}
 
 func KafkaRun(c *kafka.Consumer, run bool, connect *connect.DB, ctx context.Context) {
 
@@ -65,8 +91,41 @@ func KafkaRun(c *kafka.Consumer, run bool, connect *connect.DB, ctx context.Cont
 			// errojson.Unmarshal(dados.message, &a)
 			// fmt.Println(a)
 		}
-		if msg.TypeMessage == "updateModule" {
-			fmt.Println("e pra dar update")
+		if msg.TypeMessage == "newModule" {
+			var newModule MessageNewModule
+			json.Unmarshal(ev.Value, &newModule)
+
+			a, err := connect.Client.Step.CreateOne(prisma.Step.Title.Set(newModule.Message.Title),
+				prisma.Step.Description.Set(newModule.Message.Description),
+				prisma.Step.Slug.Set(newModule.Message.Slug),
+				prisma.Step.Course.Link(prisma.Course.ID.Equals(newModule.Message.CourseID)),
+				prisma.Step.ID.Set(newModule.Message.ID),
+				prisma.Step.CreatedAt.Set(time.Now())).Exec(ctx)
+			if err != nil {
+				log.Println(err)
+			}
+			fmt.Println(a.ID)
+
+		}
+
+		if msg.TypeMessage == "newLesson" {
+			var newLesson MessageNewLesson
+			json.Unmarshal(ev.Value, &newLesson)
+
+			a, err := connect.Client.Lesson.CreateOne(prisma.Lesson.Title.Set(newLesson.Message.Title),
+				prisma.Lesson.Slug.Set(newLesson.Message.Slug),
+				prisma.Lesson.Description.Set(newLesson.Message.Description),
+				prisma.Lesson.Link.Set(newLesson.Message.Link),
+				prisma.Lesson.Step.Link(prisma.Step.ID.Equals(newLesson.Message.ModuleID)),
+				prisma.Lesson.Course.Link(prisma.Course.ID.Equals(newLesson.Message.CourseID)),
+				prisma.Lesson.CourseID.Set(newLesson.Message.CourseID),
+				prisma.Lesson.ID.Set(newLesson.Message.ID),
+			).Exec(ctx)
+			if err != nil {
+				log.Println(err)
+			}
+			fmt.Println(a.ID)
+
 		}
 
 	}
