@@ -70,6 +70,10 @@ func KafkaRun(c *kafka.Consumer, run bool, connect *connect.DB, ctx context.Cont
 			log.Println(erro)
 		}
 
+		if msg.TypeMessage == "teste" {
+			fmt.Println("teste pegou")
+		}
+
 		if msg.TypeMessage == "newCourse" {
 			var newCourse MessageNewCourse
 			json.Unmarshal(ev.Value, &newCourse)

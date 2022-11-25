@@ -31,7 +31,7 @@ func main() {
 	}
 
 	//KAFKA
-	KC, err := kafka.NewConsumer(&kafka.ConfigMap{"bootstrap.servers": "localhost:9091,localhost:9092,localhost:9093",
+	KC, err := kafka.NewConsumer(&kafka.ConfigMap{"bootstrap.servers": "broker1:9091", //"broker1:9091,broker2:9092,broker3:9093",
 		"group.id":          "polaris",
 		"auto.offset.reset": "earliest"})
 	if err != nil {
